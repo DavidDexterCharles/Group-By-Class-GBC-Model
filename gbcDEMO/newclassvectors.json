@@ -1,0 +1,129 @@
+{
+    "model": {
+        "Art and Culture": {
+            "DocumentCount": 0,
+            "TermVectorAverage": 0,
+            "features": {}
+        },
+        "Conflicts and War and Peace": {
+            "DocumentCount": 1,
+            "TermVectorAverage": 1.0,
+            "features": {
+                "\"rowley": 1.0,
+                "'conflicts": 1.0,
+                "(": 1.0,
+                ")": 1.0,
+                "Conflicts and War and Peace": 1.0,
+                "and": 1.0,
+                "as": 1.0,
+                "category": 1.0,
+                "document": 1.0,
+                "ensure": 1.0,
+                "example": 1.0,
+                "functionality": 1.0,
+                "gbc": 1.0,
+                "gets": 1.0,
+                "illustrate": 1.0,
+                "implicitly": 1.0,
+                "in": 1.0,
+                "incremental": 1.0,
+                "is": 1.0,
+                "learning": 1.0,
+                "merge": 1.0,
+                "module.": 1.0,
+                "name": 1.0,
+                "of": 1.0,
+                "part": 1.0,
+                "peace'.": 1.0,
+                "protest": 1.0,
+                "roen\"": 1.0,
+                "tagged": 1.0,
+                "terms": 1.0,
+                "terrorism": 1.0,
+                "the": 1.0,
+                "this": 1.0,
+                "to": 1.0,
+                "under": 1.0,
+                "used": 1.0,
+                "using": 1.0,
+                "war": 1.0,
+                "will": 1.0
+            }
+        },
+        "Crime": {
+            "DocumentCount": 0,
+            "TermVectorAverage": 0,
+            "features": {}
+        },
+        "Disaster and Accidents": {
+            "DocumentCount": 0,
+            "TermVectorAverage": 0,
+            "features": {}
+        },
+        "Economy": {
+            "DocumentCount": 0,
+            "TermVectorAverage": 0,
+            "features": {}
+        },
+        "Education": {
+            "DocumentCount": 0,
+            "TermVectorAverage": 0,
+            "features": {}
+        },
+        "Environment": {
+            "DocumentCount": 0,
+            "TermVectorAverage": 0,
+            "features": {}
+        },
+        "Health": {
+            "DocumentCount": 0,
+            "TermVectorAverage": 0,
+            "features": {}
+        },
+        "Human Interest": {
+            "DocumentCount": 0,
+            "TermVectorAverage": 0,
+            "features": {}
+        },
+        "Labor": {
+            "DocumentCount": 0,
+            "TermVectorAverage": 0,
+            "features": {}
+        },
+        "Lifestyle and Leisure": {
+            "DocumentCount": 0,
+            "TermVectorAverage": 0,
+            "features": {}
+        },
+        "Politics": {
+            "DocumentCount": 0,
+            "TermVectorAverage": 0,
+            "features": {}
+        },
+        "Religion and Belief": {
+            "DocumentCount": 0,
+            "TermVectorAverage": 0,
+            "features": {}
+        },
+        "Science and Technology": {
+            "DocumentCount": 0,
+            "TermVectorAverage": 0,
+            "features": {}
+        },
+        "Society": {
+            "DocumentCount": 0,
+            "TermVectorAverage": 0,
+            "features": {}
+        },
+        "Sport": {
+            "DocumentCount": 0,
+            "TermVectorAverage": 0,
+            "features": {}
+        },
+        "Weather": {
+            "DocumentCount": 0,
+            "TermVectorAverage": 0,
+            "features": {}
+        }
+    }
+}
