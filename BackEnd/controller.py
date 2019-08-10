@@ -1,10 +1,10 @@
 from flask import request, jsonify, make_response
 from model import Model
 from flask import Flask
-
 app = Flask(__name__)
 mvcmodel = Model() # Controller instatiates Model to Interact With 
                    # classification model and database
+
 
 @app.after_request
 def after_request(response):
