@@ -8,7 +8,9 @@ class GBC:
     
     def __init__(self):
         self.model = {}
+        self.model['model'] = {}
         self.keycount = {}
+        self.keycount['model']  = {}
         self.name = "gbc"
         self.doctotal = 0
         self.matchminimum = 1
@@ -16,7 +18,20 @@ class GBC:
         self.termVectors = {}
         self.penalty = {}
         self.topics = {}
+        self.topics['model']=[]
         self.keys = {}
+
+    
+    def addtopic(self,topic,keys):
+        self.keys[topic] = keys
+        self.topics['model'].append(topic)
+        keyword = topic
+        self.model['model'][keyword]={}
+        self.model['model'][keyword]['DocumentCount'] = 0
+        self.model['model'][keyword]['TermVectorAverage'] = 0
+        self.model['model'][keyword]['features'] = {}
+        self.keycount['model'][keyword] = 0
+        
     def init(self,topics,keys):
         self.doctotal = 0
         self.matchminimum = 1
@@ -54,6 +69,7 @@ class GBC:
                     visited = {}
                     result = articlecontent.split()
                     for j in range(0,len(result)):
+                            #  print(keyword)
                             if result[j] in self.model[topic][keyword]['features'] :
                                 if result[j] not in visited:
                                     self.model[topic][keyword]['features'][result[j]] += 1

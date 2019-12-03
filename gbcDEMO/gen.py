@@ -2,6 +2,8 @@ from gbc import GBC as Classifier
 from iptc import IPTC_topics,IPTC_topictags #Import IPTC Topics And Tags
 import json
 
+from sklearn.datasets import fetch_20newsgroups
+
 
 # Read in the articles
 with open('data.json') as trainingdata:
@@ -27,10 +29,19 @@ classifier.tojson('standardizedclassvectors')
 
 
 
+classifier2 = Classifier()
 
+classifier2.MinKey(2)
+classifier2.addtopic('Religion and Belief',['religion', 'christian', 'Mosk', 'Hindu', 'church'])
+classifier2.addtopic(   'Art and Culture',
+                        ['art', 'culture', 'entertainment', 'music', 'history', 'film', 'media', 'book', 'fashion', 'festival', 'comedy','museums', 
+                                          'opera', 'drama', 'poetry','documentary', 'painting', 'theatre', 'sculpture', 'carnival' ]
+                    )
+for i in range(0,len(articles)):
+           classifier2.build(articles[i]['CONTENT'])
 
-
-
+classifier2.setweights()
+classifier2.tojson('Testclassifier2classvectors')
 
 
 
