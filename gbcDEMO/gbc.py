@@ -1,9 +1,10 @@
 import json
+from collections import Counter
 # GBC(group by Class) Model by David Charles
 # words in a doc are related, and the strength of the relation increases across multiple documents 
 # as the co-occurence between words across the documents increase.
 # from collections import Counter
-
+# https://treyhunner.com/2018/09/stop-writing-lambda-expressions/
 class GBC:
     
     def __init__(self):
@@ -150,8 +151,9 @@ class GBC:
                 key = k
         return key, largest
 
-    def getTopics(self):
-        return self.prediction
+    def getTopics(self,amount=10):
+        MultiLabelResult = Counter(self.prediction).most_common(amount)
+        return MultiLabelResult
     
     def predict(self,doc):
         modeloption = 'model'

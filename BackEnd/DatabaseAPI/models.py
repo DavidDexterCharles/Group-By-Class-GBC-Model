@@ -14,7 +14,7 @@ from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 
 class Article(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    article_id = db.Column(db.Integer, primary_key=True)
     TITLE = db.Column(db.String(600))
     SOURCE = db.Column(db.String(600),unique=True)
     DATE = db.Column(db.String(80))
@@ -35,7 +35,7 @@ class Articlecategorie(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     weight = db.Column(db.String(250))
 
-    article_id = db.Column(db.Integer, db.ForeignKey('article.id'))
+    article_id = db.Column(db.Integer, db.ForeignKey('article.article_id'))
     categorie_id = db.Column(db.Integer, db.ForeignKey('categorie.id'))
 
 class Categorie(db.Model):
@@ -51,7 +51,7 @@ class Geotag(db.Model):
     locdesc = db.Column(db.String(250))
     location = db.Column(db.String(250))
 
-    article_id = db.Column(db.Integer, db.ForeignKey('article.id'))
+    article_id = db.Column(db.Integer, db.ForeignKey('article.article_id'))
     
 class Keyword(db.Model):
     id = db.Column(db.Integer, primary_key=True)

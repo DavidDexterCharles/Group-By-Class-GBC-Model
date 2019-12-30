@@ -8,7 +8,7 @@ NewDocument1 ='''
                company closes down two of its operations
              '''
 # Get all related categories and coressponding weights
-MultiLabelResult = model1.predict(NewDocument1).getTopics()
+MultiLabelResult = model1.predict(NewDocument1).getTopics(3)
 # Get Category with higest weight
 HighestResult  = model1.predict(NewDocument1).getTopic()
 print(HighestResult)
