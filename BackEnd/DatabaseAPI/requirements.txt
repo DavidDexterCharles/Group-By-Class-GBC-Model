@@ -22,7 +22,7 @@ configparser==3.7.4
 constantly==15.1.0
 cryptography==2.1.4
 distro-info===0.18ubuntu0.18.04.1
-Django==2.0.2
+Django==2.2.13
 docutils==0.14
 favicon==0.5.1
 Flask==1.0.3
