@@ -8,6 +8,8 @@
 from typing import List
 from document_service import DocumentService,Document
 
+
+
 class GroupByClassModel:
     '''
     Implementation of  the Group By Class Machine Learning Algorithms
@@ -25,9 +27,10 @@ class GroupByClassModel:
         self.name = name
         self.categories = []
         self.number_of_documents=0
+        self.class_vectors={}
 
-    def _categorylist(self,documents):
-        all_categories = []
+    def _categorylist(self,documents:List[Document]):
+        all_categories = self.categories
         for document in documents:
             all_categories.extend(document.categories)
         unique_categories = list(set(all_categories))
@@ -63,7 +66,9 @@ class GroupByClassModel:
 
     def _train_new_model(self,json_data):
         print("training new model")
-        documents:List[Document]=self.ds.json_to_documents(json_data)
+        documents:List[Document]=self.ds.json_to_term_vectors(json_data)
+        print(documents[0].term_vector)
+        print(documents[1].term_vector)
         self.number_of_documents=len(documents)
         self._categorylist(documents)
         self.model_trained=True
@@ -90,3 +95,16 @@ class GroupByClassModel:
         prints the name of the current model instance
         '''
         print(self.name)
+
+class GBCTrainModel:
+
+    def __init__(self,model:GroupByClassModel):
+        self.model=model
+
+    def _initialize_class_vectors(self):
+        for category in self.model.categories:
+            self.model.class_vectors[category]={}
+    
+    def _populate_class_vectors(self):
+        for category in self.model.categories:
+            self.model.class_vectors[category]={}
