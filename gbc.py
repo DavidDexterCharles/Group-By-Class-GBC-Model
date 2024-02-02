@@ -2,6 +2,7 @@
 #pylint: disable=C0114:missing-module-docstring
 #pylint: disable=C0304:missing-final-newline
 #pylint: disable=C0115:missing-class-docstring
+#pylint: disable=C0303:trailing-whitespace
 
 
 from typing import List
@@ -12,7 +13,13 @@ class GroupByClassModel:
     Implementation of  the Group By Class Machine Learning Algorithms
     Features include model training,text classification,incremental learning, key word extraction
     '''
-    def __init__(self,name):
+    def __init__(self,name,increment_learning=True):
+        '''
+        Instantiate GBC Model:
+
+        *By default incremental learning is set to True.
+        '''
+        self.increment_learning=increment_learning
         self.model_trained=False
         self.ds:DocumentService=DocumentService()
         self.name = name
@@ -28,14 +35,39 @@ class GroupByClassModel:
 
     def train(self,json_data):
         '''
-        trains model, stores number of documents
+        Trains GBC Model:
+
+        *By default incremental learning is done.
+        
+        If model not already trained then create new model(generate new class vectors).
+
+        If model already trained and increment_learning is True
+        then do increment learning algorithm on existing model
+        (update existing class vectors)
         '''
+
         if self.model_trained:
-            print("model already trained")
-            return
+            if self.increment_learning:
+                self._update_existing_model(json_data)
+            else:
+                print("model already trained")
+        else:
+            self._train_new_model(json_data)
+
+    def _update_existing_model(self,json_data):
+        print("updating existing model")
         documents:List[Document]=self.ds.json_to_documents(json_data)
         self.number_of_documents=len(documents)
         self._categorylist(documents)
+        self.model_trained=True
+
+    def _train_new_model(self,json_data):
+        print("training new model")
+        documents:List[Document]=self.ds.json_to_documents(json_data)
+        self.number_of_documents=len(documents)
+        self._categorylist(documents)
+        self.model_trained=True
+
 
     def get_number_of_documents(self):
         '''
