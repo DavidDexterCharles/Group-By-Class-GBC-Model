@@ -28,6 +28,7 @@ class GroupByClassModel:
         self.categories = []
         self.number_of_documents=0
         self.class_vectors={}
+        self.documents:List[Document]=[]
 
     def _categorylist(self,documents:List[Document]):
         all_categories = self.categories
@@ -59,18 +60,18 @@ class GroupByClassModel:
 
     def _update_existing_model(self,json_data):
         print("updating existing model")
-        documents:List[Document]=self.ds.json_to_documents(json_data)
-        self.number_of_documents=len(documents)
-        self._categorylist(documents)
+        self.documents=self.ds.json_to_term_vectors(json_data)
+        self.number_of_documents=len(self.documents)
+        self._categorylist(self.documents)
         self.model_trained=True
 
     def _train_new_model(self,json_data):
         print("training new model")
-        documents:List[Document]=self.ds.json_to_term_vectors(json_data)
-        print(documents[0].term_vector)
-        print(documents[1].term_vector)
-        self.number_of_documents=len(documents)
-        self._categorylist(documents)
+        self.documents=self.ds.json_to_term_vectors(json_data)
+        print(self.documents[0].term_vector)
+        print(self.documents[1].term_vector)
+        self.number_of_documents=len(self.documents)
+        self._categorylist(self.documents)
         self.model_trained=True
 
 
@@ -96,15 +97,27 @@ class GroupByClassModel:
         '''
         print(self.name)
 
-class GBCTrainModel:
+class ModelTrainer:
 
-    def __init__(self,model:GroupByClassModel):
-        self.model=model
+    def __init__(self,class_vectors,categories):
+        self.ds:DocumentService=DocumentService()
+        self.class_vectors=class_vectors
+        self.categories=categories
 
     def _initialize_class_vectors(self):
-        for category in self.model.categories:
-            self.model.class_vectors[category]={}
+        for category in self.categories:
+            self.class_vectors[category]={}
     
     def _populate_class_vectors(self):
-        for category in self.model.categories:
-            self.model.class_vectors[category]={}
+        for category in self.categories:
+            self.class_vectors[category]={}
+
+    def _standardize_class_vectors(self):
+        pass
+
+    def _update_class_vectors(self):
+        pass
+
+    def _incremntal_learn_class_vectors(self):
+        self._update_class_vectors()
+
