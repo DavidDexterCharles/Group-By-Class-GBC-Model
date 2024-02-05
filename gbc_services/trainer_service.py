@@ -11,11 +11,12 @@ from .document_service import Document
 
 class TrainerService:
 
-    def __init__(self,class_vectors,documents:List[Document],categories=None):
+    def __init__(self,class_vectors,_unique_class_averages,documents:List[Document],categories=None):
         '''
         ..
         '''
         self._class_vectors=class_vectors
+        self._unique_class_averages=_unique_class_averages
         self._documents=documents
         self._categories=categories
         if categories is None:
@@ -67,12 +68,31 @@ class TrainerService:
         
         if unique_categories is None:
             raise ValueError("The category list is empty. Cannot perform the operation.")
+        
+        self._categories=unique_categories
 
     def standardize_class_vectors(self):
         '''
         standardize_class_vectors
         '''
-        
+        for category in self._categories:
+            class_vector=self._class_vectors[category]
+            unique_weights = set(class_vector.values())
+            unique_class_average = sum(unique_weights) / len(unique_weights)
+            self._unique_class_averages[category]=unique_class_average
+            for term in class_vector:
+                class_vector[term] = round(class_vector[term] / unique_class_average,2)
+    
+    def destandardize_class_vectors(self):
+        '''
+        destandardize_class_vectors
+        '''
+        for category in self._categories:
+            class_vector=self._class_vectors[category]
+            unique_class_average=self._unique_class_averages[category]
+            for term in class_vector:
+                class_vector[term] = round(class_vector[term] * unique_class_average,1)
+
 
     def update_class_vectors(self):
         '''

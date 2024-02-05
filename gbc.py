@@ -3,6 +3,7 @@
 #pylint: disable=C0304:missing-final-newline
 #pylint: disable=C0115:missing-class-docstring
 #pylint: disable=C0303:trailing-whitespace
+#pylint: disable=C0301:line-too-long
 
 from typing import List
 from gbc_services.document_service import DocumentService,Document
@@ -26,6 +27,7 @@ class GroupByClassModel:
         *By default incremental learning is set to True.
         '''
         self.class_vectors={}
+        self.unique_class_averages={}
         self.categories = categories
         self.unique_class_average=0
         
@@ -84,15 +86,19 @@ class GroupByClassModel:
         train model
         '''
         self.documents=self.ds.json_to_doc(json_data)
+        # print(self.documents[0].term_vector)
 
-        # if self.categories is None:
-        #     self.categories=self._categorylist(self.documents)
-
-        ts=TrainerService(self.class_vectors,self.documents,self.categories)
+        ts=TrainerService(self.class_vectors,self.unique_class_averages,self.documents,self.categories)
         
         ts.initialize_class_vectors()
         ts.populate_class_vectors()
-        print(self.class_vectors)
+        print(f"{self.class_vectors}\n")
+        ts.standardize_class_vectors()
+        print(f"{self.class_vectors}\n")
+        ts.destandardize_class_vectors()
+        print(f"{self.class_vectors}\n")
+
+
 
 
     def _update_existing_model(self,json_data):
