@@ -4,10 +4,14 @@
 #pylint: disable=C0115:missing-class-docstring
 #pylint: disable=C0303:trailing-whitespace
 
-
 from typing import List
-from document_service import DocumentService,Document
+from gbc_services.document_service import DocumentService,Document
+from gbc_services.trainer_service import TrainerService
 
+
+class GBCModel:
+    def __init__(self):
+        self.class_vectors={}
 
 
 class GroupByClassModel:
@@ -15,29 +19,44 @@ class GroupByClassModel:
     Implementation of  the Group By Class Machine Learning Algorithms
     Features include model training,text classification,incremental learning, key word extraction
     '''
-    def __init__(self,name,increment_learning=True):
+    def __init__(self,name,categories=None,increment_learning=True):
         '''
         Instantiate GBC Model:
 
         *By default incremental learning is set to True.
         '''
+        self.class_vectors={}
+        self.categories = categories
+        self.unique_class_average=0
+        
         self.increment_learning=increment_learning
         self.model_trained=False
         self.ds:DocumentService=DocumentService()
         self.name = name
-        self.categories = []
+        
         self.number_of_documents=0
-        self.class_vectors={}
         self.documents:List[Document]=[]
 
     def _categorylist(self,documents:List[Document]):
-        all_categories = self.categories
-        for document in documents:
-            all_categories.extend(document.categories)
-        unique_categories = list(set(all_categories))
-        self.categories=unique_categories
+        # all_categories=[]
+        # if self.categories is not None:
+        #     all_categories = self.categories
+        # for document in documents:
+        #     all_categories.extend(document.categories)
+        # unique_categories = list(set(all_categories))
 
-    def train(self,json_data):
+        # if unique_categories is None:
+        #     raise ValueError("The category list is empty. Cannot perform the operation.")
+        
+        # return unique_categories
+
+        ts=TrainerService(self.class_vectors,self.documents,['Category C', 'Category F'])
+        self.categories=ts.categorylist()
+        print(ts._class_vectors)
+
+        return self.categories
+
+    def train3(self,json_data):
         '''
         Trains GBC Model:
 
@@ -57,21 +76,42 @@ class GroupByClassModel:
                 print("model already trained")
         else:
             self._train_new_model(json_data)
+        
+        # self.train2(json_data)
+    
+    def train(self,json_data):
+        '''
+        train model
+        '''
+        self.documents=self.ds.json_to_doc(json_data)
+
+        # if self.categories is None:
+        #     self.categories=self._categorylist(self.documents)
+
+        ts=TrainerService(self.class_vectors,self.documents,self.categories)
+        
+        ts.initialize_class_vectors()
+        ts.populate_class_vectors()
+        print(self.class_vectors)
+
 
     def _update_existing_model(self,json_data):
         print("updating existing model")
-        self.documents=self.ds.json_to_term_vectors(json_data)
+        self.documents=self.ds.json_to_doc(json_data)
         self.number_of_documents=len(self.documents)
-        self._categorylist(self.documents)
+        self.categories=self._categorylist(self.documents)
         self.model_trained=True
 
     def _train_new_model(self,json_data):
         print("training new model")
-        self.documents=self.ds.json_to_term_vectors(json_data)
+        self.documents=self.ds.json_to_doc(json_data)
         print(self.documents[0].term_vector)
         print(self.documents[1].term_vector)
+        print(self.documents[2].term_vector)
+        print(self.documents[3].term_vector)
+        print("\n")
         self.number_of_documents=len(self.documents)
-        self._categorylist(self.documents)
+        self.categories=self._categorylist(self.documents)
         self.model_trained=True
 
 
@@ -96,28 +136,3 @@ class GroupByClassModel:
         prints the name of the current model instance
         '''
         print(self.name)
-
-class ModelTrainer:
-
-    def __init__(self,class_vectors,categories):
-        self.ds:DocumentService=DocumentService()
-        self.class_vectors=class_vectors
-        self.categories=categories
-
-    def _initialize_class_vectors(self):
-        for category in self.categories:
-            self.class_vectors[category]={}
-    
-    def _populate_class_vectors(self):
-        for category in self.categories:
-            self.class_vectors[category]={}
-
-    def _standardize_class_vectors(self):
-        pass
-
-    def _update_class_vectors(self):
-        pass
-
-    def _incremntal_learn_class_vectors(self):
-        self._update_class_vectors()
-
