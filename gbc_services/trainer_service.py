@@ -46,6 +46,7 @@ class TrainerService:
         if self._categories is not None:
             for category in self._categories:
                 self._class_vectors[category]=Counter()
+                self._unique_class_averages[category]=0
         
     
     def populate_class_vectors(self):
