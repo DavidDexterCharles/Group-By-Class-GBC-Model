@@ -11,9 +11,8 @@ from typing import List
 from collections import Counter
 
 class Document:
-    def __init__(self,  title, content, categories:List,term_vector):
+    def __init__(self,content, categories:List,term_vector):
         self.id = str(uuid.uuid4())
-        self.title = title
         self.content = content
         self.categories = categories
         self.term_vector:Counter = term_vector
@@ -35,21 +34,20 @@ class DocumentService:
 
         [
             {
-            "title": "Document 1",
             "content": "This is the content of Document 1.",
             "categories": ["Category A", "Category B"]
             },
            ....
         ]
 
-        [Document(doc['title'], doc['content'], doc['categories'],_term_vector(doc))]
+        [Document(doc['content'], doc['categories'],_term_vector(doc))]
         '''
         try:
             data = json.loads(json_data)
             documents_data = data#data.get('documents', [])
             # Convert JSON data to a list of Document instances
             documents = [
-                Document(doc['title'], doc['content'], doc['categories'],self._term_vector(doc))
+                Document(doc['content'], doc['categories'],self._term_vector(doc))
                 for doc in documents_data
             ]
             # Return a Documents instance
