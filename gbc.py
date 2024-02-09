@@ -9,6 +9,7 @@ from typing import Dict, List
 import uuid
 from gbc_services.document_service import DocumentService,Document
 from gbc_services.trainer_service import TrainerService
+from gbc_services.classifier_service import ClassifierService
 
 class GroupByClassModel:
     '''
@@ -37,6 +38,10 @@ class GroupByClassModel:
         
         self.number_of_documents=0
 
+    def classify(self,data):
+        cs = ClassifierService(self.model_class_vectors,self.model_categories)
+        cs.classify(data)
+        
     def train(self,json_data):
         '''
         Trains GBC Model:

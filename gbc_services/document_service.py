@@ -40,14 +40,14 @@ class DocumentService:
            ....
         ]
 
-        [Document(doc['content'], doc['categories'],_term_vector(doc))]
+        [Document(doc['content'], doc['categories'],term_vector(doc))]
         '''
         try:
             data = json.loads(json_data)
             documents_data = data#data.get('documents', [])
             # Convert JSON data to a list of Document instances
             documents = [
-                Document(doc['content'], doc['categories'],self._term_vector(doc))
+                Document(doc['content'], doc['categories'],self.term_vector(doc))
                 for doc in documents_data
             ]
             # Return a Documents instance
@@ -56,7 +56,10 @@ class DocumentService:
             print(f"Error decoding JSON: {e}")
             return None
         
-    def _term_vector(self,doc):
+    def term_vector(self,doc):
+        '''
+        converts provided doc to a term_vector
+        '''
         tv=Counter(self._pre_process(doc['content']).split(" "))
         return tv
     def _pre_process(self,text):
