@@ -62,9 +62,13 @@ class TrainerService:
             valid_categories=self._get_valid_categories(document.categories,self.categories)
             for category in valid_categories:
                 if category in self.class_vectors:
-                    self.class_vectors[category]+=document.term_vector
+                    #dont use short hand below, it causes strange issues
+                    #and wrong vector merging
+                    # self.class_vectors[category]+=document.term_vector
+                    self.class_vectors[category]=self.class_vectors[category]+document.term_vector
                 else:
                     self.class_vectors[category]=document.term_vector
+        
         unique_categories = self._get_valid_categories(all_categories,self.categories)
         
         if unique_categories is None:
@@ -82,11 +86,39 @@ class TrainerService:
         for category in valid_categories:
             class_vector=self.class_vectors[category]
             unique_weights = set(class_vector.values())
-            unique_class_average = sum(unique_weights) / len(unique_weights)
+            unique_class_average = self._get_unique_class_average(unique_weights)
             self.unique_class_averages[category]=unique_class_average
             for term in class_vector:
                 class_vector[term] = round(class_vector[term] / unique_class_average,2)
     
+    def _get_unique_class_average(self,unique_weights):
+        '''
+        The unique_class_average is the number used for standardizing or destandardizing 
+        a classvector.
+        
+        total_unique_weights=sum(unique_weights)
+        number_of_unique_weights=(len(unique_weights))+1
+        unique_class_average=total_unique_weights/number_of_unique_weights
+
+        above we add 1 to the number of unique_weights to account for terms that have a weight
+        of zero (i.e. terms that have been excluded from the class avergae). This also ensures that 
+        the 1 is the minimum value number_of_unique_weights can be.
+
+        There are two main steps involved in standardizing a class vector. Firstly the
+        average of the term weights in the class vector is found. Only unique weights are used
+        to find this average because term weights in a class vector that have the same weight
+        values are considered to be of the same value. This average is called the “unique class
+        average”. Secondly, after the unique class average is calculated for a given class vector,
+        each term weight in the class vector is divided by the unique class average for that class
+        vector. The resulting class vectors are now standardized and can be used for classifying
+        documents. The Class Vectors produced together make up the text classification model.
+        '''
+        total_unique_weights=sum(unique_weights)
+        number_of_unique_weights=(len(unique_weights))+1
+        
+        unique_class_average=total_unique_weights/number_of_unique_weights
+        return unique_class_average
+
     def get_valid_doc_labels(self,document_categories):
         '''
         Used For Incemental learning
@@ -95,7 +127,8 @@ class TrainerService:
         is true
         '''
         if self.allow_new_labels:
-            self.categories+=document_categories
+            # self.categories+=document_categories
+            self.categories=self.categories+document_categories
             self.categories=list(set(self.categories))
         valid_categories=self._get_valid_categories(document_categories,self.categories)
         return valid_categories
@@ -123,7 +156,8 @@ class TrainerService:
         merge_classvector_with_termvector
         '''
         for category in valid_categories:
-            self.class_vectors[category]+=document_term_vector
+            # self.class_vectors[category]+=document_term_vector
+            self.class_vectors[category]=self.class_vectors[category]+document_term_vector
             self.unique_class_averages[category]=0
     
     def re_standardize_class_vectors(self,valid_categories:List):
@@ -147,7 +181,8 @@ class TrainerService:
             valid_categories=self._get_valid_categories(document.categories,self.categories)
             for category in valid_categories:
                 if category in self.class_vectors:
-                    self.class_vectors[category]+=document.term_vector
+                    # self.class_vectors[category]+=document.term_vector
+                    self.class_vectors[category]=self.class_vectors[category]+document.term_vector
                 else:
                     self.class_vectors[category]=document.term_vector
         unique_categories = self._get_valid_categories(all_categories,self.categories)

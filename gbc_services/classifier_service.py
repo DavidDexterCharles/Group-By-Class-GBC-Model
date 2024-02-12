@@ -33,14 +33,16 @@ class ClassifierService:
     '''
     def __init__(self,model_class_vectors,model_categories):
         self.model_class_vectors=model_class_vectors
-        self.model_categories=model_categories
+        self.model_categories:List=model_categories
         self.ds:DocumentService=DocumentService()
     
     def classify(self,data):
         query_vector=self.ds.term_vector(data)
-        related_vectors=[]
+        related_vectors={}
         for category in self.model_categories:
             mcv=self.model_class_vectors[category]
             related_vector=list(set(mcv).intersection(set(query_vector)))
             if related_vector:
-                related_vectors.append(related_vector)
+                related_vectors[category]=mcv
+        
+        print(related_vectors)

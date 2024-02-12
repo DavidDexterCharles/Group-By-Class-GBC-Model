@@ -47,7 +47,7 @@ class DocumentService:
             documents_data = data#data.get('documents', [])
             # Convert JSON data to a list of Document instances
             documents = [
-                Document(doc['content'], doc['categories'],self.term_vector(doc))
+                Document(doc['content'], doc['categories'],self.term_vector(doc['content']))
                 for doc in documents_data
             ]
             # Return a Documents instance
@@ -60,7 +60,7 @@ class DocumentService:
         '''
         converts provided doc to a term_vector
         '''
-        tv=Counter(self._pre_process(doc['content']).split(" "))
+        tv=Counter(self._pre_process(doc).split(" "))
         return tv
     def _pre_process(self,text):
         text = text.lower()

@@ -16,7 +16,7 @@ class GroupByClassModel:
     Implementation of  the Group By Class Machine Learning Algorithms
     Features include model training,text classification,incremental learning, key word extraction
     '''
-    def __init__(self,name,categories=None,increment_learning=True):
+    def __init__(self,name,categories:List=None,increment_learning=True):
         '''
         Instantiate GBC Model:
 
@@ -24,7 +24,7 @@ class GroupByClassModel:
         '''
         self.model_class_vectors:Dict={}
         self.model_unique_class_averages:Dict={}
-        self.model_categories = categories
+        self.model_categories:List = categories
         self.unique_class_average=0
         if self.model_categories is None:
             self.allow_new_labels=True
@@ -46,7 +46,7 @@ class GroupByClassModel:
         '''
         Trains GBC Model:
 
-        *By default incremental learning is done.
+        *By default incremental learning is enabeled.
         
         If model not already trained then create new model(generate new class vectors).
 
@@ -67,6 +67,7 @@ class GroupByClassModel:
             self._train_new_model(ts)
         
         print(f"{self.model_class_vectors}\n")
+        print(f"unique_class_averages:{self.model_unique_class_averages}\n")
 
     def _update_existing_model(self,ts:TrainerService):
         '''
@@ -78,13 +79,12 @@ class GroupByClassModel:
             valid_categories=ts.get_valid_doc_labels(document.categories)
             ts.destandardize_class_vectors(valid_categories)
             ts.merge_classvector_with_termvector(valid_categories,document.term_vector)
+            # print(f"Destandardize:{ts.class_vectors}\n")
             ts.re_standardize_class_vectors(valid_categories)
-
+            
             self.model_categories=ts.categories
             self.model_class_vectors=ts.class_vectors
             self.model_unique_class_averages=ts.unique_class_averages
-        
-        # print(f"{ts.categories}\n")
 
     def _train_new_model(self,ts:TrainerService):
         '''
