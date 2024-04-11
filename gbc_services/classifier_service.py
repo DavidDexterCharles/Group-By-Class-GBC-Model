@@ -5,7 +5,7 @@
 #pylint: disable=C0303:trailing-whitespace
 
 from typing import List
-from gbc_services.document_service import DocumentService,Document
+from gbc_services.document_service import DocumentService
 
 
 class ClassifierService:
@@ -39,10 +39,16 @@ class ClassifierService:
     def classify(self,data):
         query_vector=self.ds.term_vector(data)
         related_vectors={}
+        related_terms={}
         for category in self.model_categories:
             mcv=self.model_class_vectors[category]
-            related_vector=list(set(mcv).intersection(set(query_vector)))
-            if related_vector:
-                related_vectors[category]=mcv
+            matching_terms=set(mcv).intersection(set(query_vector))
+            if matching_terms:
+                related_vector = {key: mcv[key] for key in matching_terms}
+                dot_product = sum(query_vector.get(key, 0) * related_vector.get(key, 0) for key in set(query_vector) & set(related_vector))
+                related_terms[category]=related_vector
+                related_vectors[category]=dot_product
         
+        print(query_vector)
+        print(related_terms)
         print(related_vectors)
