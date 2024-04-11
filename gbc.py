@@ -24,6 +24,7 @@ class GroupByClassModel:
         '''
         self.model_class_vectors:Dict={}
         self.model_unique_class_averages:Dict={}
+        self.combined_classterm_weights:Dict={}
         self.model_categories:List = categories
         # self.unique_class_average=0
         if self.model_categories is None:
@@ -39,8 +40,11 @@ class GroupByClassModel:
         self.number_of_documents=0
 
     def classify(self,data):
-        cs = ClassifierService(self.model_class_vectors,self.model_categories)
-        cs.classify(data)
+        '''
+        classify
+        '''
+        cs = ClassifierService(self.model_class_vectors,self.model_categories,self.combined_classterm_weights)
+        return cs.classify(data)
         
     def train(self,json_data):
         '''
@@ -85,6 +89,8 @@ class GroupByClassModel:
             self.model_categories=ts.categories
             self.model_class_vectors=ts.class_vectors
             self.model_unique_class_averages=ts.unique_class_averages
+            self.combined_classterm_weights=ts.combined_classterm_weights
+
 
     def _train_new_model(self,ts:TrainerService):
         '''
@@ -98,6 +104,7 @@ class GroupByClassModel:
         self.model_class_vectors=ts.class_vectors
         self.model_unique_class_averages=ts.unique_class_averages
         self.model_trained=True
+        self.combined_classterm_weights=ts.combined_classterm_weights
 
 
     def get_number_of_documents(self):

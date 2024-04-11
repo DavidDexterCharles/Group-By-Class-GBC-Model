@@ -32,10 +32,11 @@ class ClassifierService:
         highest result is the category that best represents the query vector, and hence
         also the new document.
     '''
-    def __init__(self,model_class_vectors,model_categories):
+    def __init__(self,model_class_vectors,model_categories,combined_classterm_weights):
         self.model_class_vectors=model_class_vectors
         self.model_categories:List=model_categories
         self.ds:DocumentService=DocumentService()
+        self.combined_classterm_weights=combined_classterm_weights
     
     def classify(self,data):
         '''
@@ -50,10 +51,15 @@ class ClassifierService:
             matching_terms=set(mcv).intersection(set(query_vector))
             if matching_terms:
                 related_vector = {key: mcv[key] for key in matching_terms}
+                for key in matching_terms:
+                    related_vector[key]=mcv[key]/self.combined_classterm_weights[key] #Penalize the Related Class Vectors using combined_classterm_weights
+
                 dot_product = sum(query_vector.get(key, 0) * related_vector.get(key, 0) for key in set(query_vector) & set(related_vector))
                 related_terms[category]=related_vector
                 related_vectors[category]=dot_product
-        
+
+        print("\n\n")
         print(f"query_vector {query_vector}")
         print(f"related_terms {related_terms}")
         print(f"related_vectors {related_vectors}")
+        return related_vectors
