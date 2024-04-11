@@ -3,6 +3,7 @@
 #pylint: disable=C0304:missing-final-newline
 #pylint: disable=C0115:missing-class-docstring
 #pylint: disable=C0303:trailing-whitespace
+#pylint: disable=C0301:line-too-long
 
 from typing import List
 from gbc_services.document_service import DocumentService
@@ -37,6 +38,10 @@ class ClassifierService:
         self.ds:DocumentService=DocumentService()
     
     def classify(self,data):
+        '''
+        classify provided document by converting the data to a queryvector and finding dot product
+        between it and its related class vectors
+        '''
         query_vector=self.ds.term_vector(data)
         related_vectors={}
         related_terms={}
@@ -49,6 +54,6 @@ class ClassifierService:
                 related_terms[category]=related_vector
                 related_vectors[category]=dot_product
         
-        print(query_vector)
-        print(related_terms)
-        print(related_vectors)
+        print(f"query_vector {query_vector}")
+        print(f"related_terms {related_terms}")
+        print(f"related_vectors {related_vectors}")

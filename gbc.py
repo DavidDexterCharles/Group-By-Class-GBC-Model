@@ -25,7 +25,7 @@ class GroupByClassModel:
         self.model_class_vectors:Dict={}
         self.model_unique_class_averages:Dict={}
         self.model_categories:List = categories
-        self.unique_class_average=0
+        # self.unique_class_average=0
         if self.model_categories is None:
             self.allow_new_labels=True
         else:
