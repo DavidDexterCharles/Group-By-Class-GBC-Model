@@ -1,0 +1,204 @@
+health emergencies
+
+give me 200 keywords and how much times they may appear in related corposes that specifically deal with health emergencies. 
+format: {"keyword":count}
+
+Emergency: 500
+Crisis: 400
+Trauma: 300
+Urgent: 250
+Critical: 200
+Disaster: 350
+Accident: 300
+Injury: 400
+Life-threatening: 150
+First aid: 200
+Paramedic: 150
+Ambulance: 250
+Resuscitation: 150
+Triage: 200
+CPR: 200
+Cardiac arrest: 150
+Stroke: 300
+Heart attack: 250
+Choking: 200
+Seizure: 250
+Poisoning: 200
+Burn: 250
+Shock: 300
+Hypothermia: 150
+Heatstroke: 150
+Asthma attack: 200
+Allergic reaction: 200
+Anaphylaxis: 150
+Diabetes emergency: 150
+Overdose: 200
+Drowning: 150
+Fainting: 200
+Fracture: 250
+Hemorrhage: 200
+Concussion: 200
+Sepsis: 150
+Meningitis: 150
+Ebola outbreak: 100
+Pandemic: 200
+Epidemic: 250
+Quarantine: 200
+Isolation: 200
+Contagion: 200
+Infectious disease: 300
+Outbreak: 250
+Public health crisis: 200
+Bioterrorism: 100
+Chemical spill: 100
+Radiation exposure: 100
+Mass casualty incident: 150
+Evacuation: 200
+Shelter-in-place: 150
+Disaster preparedness: 200
+Emergency response: 300
+Search and rescue: 200
+Emergency management: 250
+Emergency room: 300
+Hospitalization: 250
+Intensive care: 200
+Surgical intervention: 150
+Medical evacuation: 150
+Field hospital: 150
+Mobile clinic: 150
+Triage center: 150
+Medical supplies: 200
+Oxygen therapy: 150
+Ventilator: 200
+Defibrillator: 150
+IV fluids: 200
+Medication administration: 200
+Blood transfusion: 150
+Wound care: 200
+Splinting: 150
+Stabilization: 200
+Pain management: 200
+Sedation: 150
+Anesthesia: 150
+Epidural: 100
+Spinal immobilization: 150
+Airway management: 200
+Suctioning: 150
+Tracheostomy: 100
+Nasogastric tube: 100
+Catheterization: 150
+ECG monitoring: 150
+Blood pressure monitoring: 200
+Temperature monitoring: 200
+Oxygen saturation monitoring: 150
+Glasgow Coma Scale: 150
+Pain scale: 150
+Mental status assessment: 200
+Patient assessment: 250
+Primary survey: 200
+Secondary survey: 200
+ABCDE approach: 150
+SAMPLE history: 150
+OPQRST assessment: 150
+Airway obstruction: 150
+Breathing difficulties: 200
+Circulatory compromise: 150
+Disability assessment: 150
+Exposure assessment: 150
+Hypovolemic shock: 150
+Cardiogenic shock: 100
+Neurogenic shock: 100
+Anaphylactic shock: 100
+Septic shock: 100
+Distributive shock: 100
+Respiratory distress syndrome: 150
+Acute respiratory distress syndrome (ARDS): 150
+Pulmonary embolism: 150
+Myocardial infarction: 150
+Aortic dissection: 100
+Abdominal aortic aneurysm: 100
+Stroke mimics: 100
+Transient ischemic attack (TIA): 100
+Intracerebral hemorrhage: 100
+Subarachnoid hemorrhage: 100
+Ischemic stroke: 150
+Hemorrhagic stroke: 150
+FAST exam: 100
+Thrombolytic therapy: 100
+Anticoagulant therapy: 100
+Tourniquet: 100
+Chest tube: 100
+Central venous catheter: 100
+Arterial line: 100
+Intraosseous access: 100
+Fluid resuscitation: 150
+Blood products: 150
+Hypoglycemia: 150
+Hyperglycemia: 150
+Diabetic ketoacidosis: 100
+Hyperosmolar hyperglycemic state: 100
+Insulin therapy: 100
+Glucose monitoring: 100
+Hyperkalemia: 100
+Hypokalemia: 100
+Electrolyte imbalance: 100
+Acid-base imbalance: 100
+Alkalosis: 100
+Acidosis: 100
+Metabolic acidosis: 100
+Respiratory acidosis: 100
+Metabolic alkalosis: 100
+Respiratory alkalosis: 100
+Dehydration: 150
+Fluid overload: 100
+Hyponatremia: 100
+Hypernatremia: 100
+Hypocalcemia: 100
+Hypercalcemia: 100
+Hypomagnesemia: 100
+Hypermagnesemia: 100
+Hypophosphatemia: 100
+Hyperphosphatemia: 100
+Sepsis protocol: 100
+Sepsis bundle: 100
+Early goal-directed therapy: 100
+Septic workup: 100
+Empiric antibiotics: 100
+Fluid challenge: 100
+Vasopressors: 100
+Inotropic agents: 100
+Mechanical ventilation: 100
+Endotracheal intubation: 100
+Rapid sequence intubation: 100
+Glottic edema: 100
+Laryngeal edema: 100
+Respiratory failure: 150
+Cardiopulmonary resuscitation (CPR): 200
+Advanced cardiac life support (ACLS): 150
+Basic life support (BLS): 150
+Pediatric advanced life support (PALS): 100
+Neonatal resuscitation: 100
+Neonatal intensive care unit (NICU): 100
+Obstetric emergency: 150
+Preeclampsia: 100
+Eclampsia: 100
+Placental abruption: 100
+Shoulder dystocia: 100
+Postpartum hemorrhage: 100
+Preterm labor: 100
+Abruptio placentae: 100
+Uterine rupture: 100
+Cord prolapse: 100
+Amniotic fluid embolism: 100
+Neonatal sepsis: 100
+Respiratory distress syndrome (RDS): 100
+Meconium aspiration syndrome: 100
+Neonatal jaundice: 100
+Neonatal hypoglycemia: 100
+Hypoxic-ischemic encephalopathy: 100
+Congenital heart defects: 100
+Neural tube defects: 100
+Down syndrome: 100
+Fetal distress: 100
+Cerebral palsy: 100
+Developmental delay: 100
