@@ -1,0 +1,1 @@
+# pylint: disable=C0115:missing-class-docstring,C0114:missing-module-docstring,C0301:line-too-long# pylint: disable=W0612:unused-variable# from sqlalchemy.orm import Sessionfrom app.db.base import SessionLocaldef get_db():    '''    returns a local db session    '''    db = SessionLocal()    try:        yield db    finally:        db.close()

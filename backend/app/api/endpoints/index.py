@@ -1,0 +1,1 @@
+# pylint: disable=C0115:missing-class-docstring,C0114:missing-module-docstringfrom fastapi import APIRouterrouter = APIRouter()@router.get("/")def main():    '''    returns API Welcome    '''    return "API VIEW"
