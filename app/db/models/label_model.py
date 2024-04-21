@@ -12,7 +12,7 @@ class Label(Base):
     name = Column(String,nullable=False, unique=True)
     description = Column(String,nullable=False, unique=True)
     corpus_label = relationship("CorpusLabel", back_populates="label")
- 
+
 Base.metadata.create_all(engine)# by importing this class the sqlite db gets aautomatically created if it doesnt exists, possibly due to fastapi dependency injection system
 # async def init_models(): #https://stackoverflow.com/a/74000761/5826992
 #     async with engine.begin() as conn:
