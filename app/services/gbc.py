@@ -7,9 +7,9 @@
 
 from typing import Dict, List
 import uuid
-from gbc_services.document_service import DocumentService,Document
-from gbc_services.trainer_service import TrainerService
-from gbc_services.classifier_service import ClassifierService
+from .gbc_services.document_service import DocumentService,Document
+from .gbc_services.trainer_service import TrainerService
+from .gbc_services.classifier_service import ClassifierService
 
 class GroupByClassModel:
     '''

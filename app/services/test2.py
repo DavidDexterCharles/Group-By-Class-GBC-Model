@@ -5,7 +5,7 @@
 #pylint: disable=C0303:trailing-whitespace
 #pylint: disable=C0301:line-too-long
 #pylint: disable=C0103:invalid-name
-from gbc import  GroupByClassModel
+from .gbc import  GroupByClassModel
 example_json_data =  '''[
     {
         "content": "Get rich quick with this amazing offer!",
