@@ -7,16 +7,16 @@
 
 from typing import Dict, List
 import uuid
-from .gbc_services.document_service import DocumentService,Document
-from .gbc_services.trainer_service import TrainerService
-from .gbc_services.classifier_service import ClassifierService
+from app.services.gbc_services.document_service import DocumentService,Document
+from app.services.gbc_services.trainer_service import TrainerService
+from app.services.gbc_services.classifier_service import ClassifierService
 
 class GroupByClassModel:
     '''
     Implementation of  the Group By Class Machine Learning Algorithms
     Features include model training,text classification,incremental learning, key word extraction
     '''
-    def __init__(self,name,categories:List=None,increment_learning=True):
+    def __init__(self,name="",categories:List=None,increment_learning=True):
         '''
         Instantiate GBC Model:
 
@@ -46,7 +46,7 @@ class GroupByClassModel:
         cs = ClassifierService(self.model_class_vectors,self.model_categories,self.combined_classterm_weights)
         return cs.classify(data)
         
-    def train(self,json_data):
+    def train(self,json_data,string_to_json=False):
         '''
         Trains GBC Model:
 
@@ -58,7 +58,8 @@ class GroupByClassModel:
         then do increment learning algorithm on existing model
         (update existing class vectors)
         '''
-        documents:List[Document]=self.ds.json_to_doc(json_data)
+        
+        documents:List[Document]=self.ds.json_to_doc(json_data,string_to_json)
         self.number_of_documents+=len(documents)
         ts=TrainerService(self.model_class_vectors,self.model_unique_class_averages,documents,self.allow_new_labels,self.model_categories)
 

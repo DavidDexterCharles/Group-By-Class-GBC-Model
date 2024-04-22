@@ -24,7 +24,7 @@ class Document:
 
 class DocumentService:
         
-    def json_to_doc(self,json_data):
+    def json_to_doc(self,json_data,string_to_json):
         '''
         converts json structure below to list of documents with their 
         respective termvectors.
@@ -43,13 +43,22 @@ class DocumentService:
         [Document(doc['content'], doc['categories'],term_vector(doc))]
         '''
         try:
-            data = json.loads(json_data)
-            documents_data = data#data.get('documents', [])
+            if string_to_json:
+                data = json.loads(json_data)
+                documents_data = data
+                documents = [
+                    Document(doc['content'], doc['categories'],self.term_vector(doc['content']))
+                    for doc in documents_data
+                ]
+            else:
+                data = json_data
+                documents_data = data
+                documents = [
+                    Document(doc.content, doc.categories,self.term_vector(doc.content))
+                    for doc in documents_data
+                ]
             # Convert JSON data to a list of Document instances
-            documents = [
-                Document(doc['content'], doc['categories'],self.term_vector(doc['content']))
-                for doc in documents_data
-            ]
+            
             # Return a Documents instance
             return documents
         except json.JSONDecodeError as e:

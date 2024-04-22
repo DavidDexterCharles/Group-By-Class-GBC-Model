@@ -6,7 +6,7 @@
 #pylint: disable=C0301:line-too-long
 
 from typing import List
-from gbc_services.document_service import DocumentService
+from .document_service import DocumentService
 
 
 class ClassifierService:
