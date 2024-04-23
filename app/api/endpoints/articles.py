@@ -92,30 +92,38 @@ async def train(request_data: list[Article],modelname:str="model",increment_lear
         raise HTTPException(status_code=500, detail=f"message: {str(e)}")
     
 @router.post("/classify")
-async def classify(request_data: list[Article],increment_learning:bool=True,mongo_client: MongoClient = Depends(get_mongo_client)):
+async def classify(article_data:str="Congratulations! You've been selected as the winner of our exclusive contest. Claim your prize now!",mongo_client: MongoClient = Depends(get_mongo_client)):
     '''
     train model
     '''
-    model=GroupByClassModel(increment_learning=increment_learning)
+    model=GroupByClassModel()
     db = mongo_client["gbc_db"]
+    model_collection = db["model"]
+    first_item = model_collection.find_one()
 
-    categories_collection = db["model_categories"]
-    class_vectors_collection = db["model_class_vectors"]
-    combined_classterm_weights_collection = db["model_combined_classterm_weights"]
-    unique_class_averages_collection = db["model_unique_class_averages"]
+   
+    # categories_collection = db["model_categories"]
+    # class_vectors_collection = db["model_class_vectors"]
+    # combined_classterm_weights_collection = db["model_combined_classterm_weights"]
+    # unique_class_averages_collection = db["model_unique_class_averages"]
    
     # model.model_categories=model_categories
     # model.model_class_vectors=model_class_vectors
     # model.model_combined_classterm_weights=model_combined_classterm_weights
     # model.model_unique_class_averages=model_unique_class_averages
 
-    model.train(request_data)
+    # model.train(request_data)
     # # model3.train(example_json_data2)
     # model.get_categories(True)
     try:
         # Insert the item into MongoDB
         # inserted_item = collection.insert_one(model.model_class_vectors)
-        pass
+        if first_item:
+            model.set_model(first_item)
+            result=model.classify(article_data)
+            return result
+        else:
+            return {"message":"no trained model found"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"message: {str(e)}")
 

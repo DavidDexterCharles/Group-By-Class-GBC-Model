@@ -163,7 +163,7 @@ class TrainerService:
         '''
         for category in valid_categories:
             # self.class_vectors[category]+=document_term_vector
-            self.class_vectors[category]=self.class_vectors[category]+document_term_vector
+            self.class_vectors[category]=Counter(self.class_vectors[category])+document_term_vector
             self.unique_class_averages[category]=0
     
     def re_standardize_class_vectors(self,valid_categories:List):

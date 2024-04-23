@@ -51,7 +51,10 @@ class GroupByClassModel:
         use a model retrieved from persistence store
         '''
         self.name:str=retrieved_model["name"]
-        self.model_trained:bool=retrieved_model["trained"]
+        if self.increment_learning:
+            self.model_trained:bool=retrieved_model["trained"]
+        else:
+            self.model_trained:bool=False
         self.model_class_vectors=retrieved_model["class_vectors"]
         self.model_unique_class_averages:Dict=retrieved_model["unique_class_averages"]
         self.model_combined_classterm_weights:Dict=retrieved_model["combined_classterm_weights"]
