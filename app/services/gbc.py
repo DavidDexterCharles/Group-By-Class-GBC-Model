@@ -5,11 +5,18 @@
 #pylint: disable=C0303:trailing-whitespace
 #pylint: disable=C0301:line-too-long
 
+from collections import Counter
 from typing import Dict, List
 import uuid
 from app.services.gbc_services.document_service import DocumentService,Document
 from app.services.gbc_services.trainer_service import TrainerService
 from app.services.gbc_services.classifier_service import ClassifierService
+
+class GBCmodel:
+    categories:list
+    class_vectors:dict
+    combined_classterm_weights:dict
+    unique_class_averages:dict
 
 class GroupByClassModel:
     '''
@@ -24,7 +31,7 @@ class GroupByClassModel:
         '''
         self.model_class_vectors:Dict={}
         self.model_unique_class_averages:Dict={}
-        self.combined_classterm_weights:Dict={}
+        self.model_combined_classterm_weights:Dict={}
         self.model_categories:List = categories
         # self.unique_class_average=0
         if self.model_categories is None:
@@ -39,11 +46,22 @@ class GroupByClassModel:
         
         self.number_of_documents=0
 
+    def set_model(self,retrieved_model):
+        '''
+        use a model retrieved from persistence store
+        '''
+        self.name:str=retrieved_model["name"]
+        self.model_trained:bool=retrieved_model["trained"]
+        self.model_class_vectors=retrieved_model["class_vectors"]
+        self.model_unique_class_averages:Dict=retrieved_model["unique_class_averages"]
+        self.model_combined_classterm_weights:Dict=retrieved_model["combined_classterm_weights"]
+        self.model_categories:List = retrieved_model["categories"]
+
     def classify(self,data):
         '''
         classify
         '''
-        cs = ClassifierService(self.model_class_vectors,self.model_categories,self.combined_classterm_weights)
+        cs = ClassifierService(self.model_class_vectors,self.model_categories,self.model_combined_classterm_weights)
         return cs.classify(data)
         
     def train(self,json_data,string_to_json=False):
@@ -90,7 +108,7 @@ class GroupByClassModel:
             self.model_categories=ts.categories
             self.model_class_vectors=ts.class_vectors
             self.model_unique_class_averages=ts.unique_class_averages
-            self.combined_classterm_weights=ts.combined_classterm_weights
+            self.model_combined_classterm_weights=ts.combined_classterm_weights
 
 
     def _train_new_model(self,ts:TrainerService):
@@ -105,7 +123,7 @@ class GroupByClassModel:
         self.model_class_vectors=ts.class_vectors
         self.model_unique_class_averages=ts.unique_class_averages
         self.model_trained=True
-        self.combined_classterm_weights=ts.combined_classterm_weights
+        self.model_combined_classterm_weights=ts.combined_classterm_weights
 
 
     def get_number_of_documents(self):
