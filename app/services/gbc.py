@@ -108,10 +108,10 @@ class GroupByClassModel:
             # print(f"Destandardize:{ts.class_vectors}\n")
             ts.re_standardize_class_vectors(valid_categories)
             
-            self.model_categories=ts.categories
-            self.model_class_vectors=ts.class_vectors
-            self.model_unique_class_averages=ts.unique_class_averages
-            self.model_combined_classterm_weights=ts.combined_classterm_weights
+        self.model_categories=ts.categories
+        self.model_class_vectors=ts.class_vectors
+        self.model_unique_class_averages=ts.unique_class_averages
+        self.model_combined_classterm_weights=ts.combined_classterm_weights
 
 
     def _train_new_model(self,ts:TrainerService):

@@ -33,7 +33,8 @@ class TrainerService:
         vectors and the new document is only related
         to 2 out of the 100 (i.e. has category labels matching only 2 class vectors), then only the related class vectors get updated without having to traverse the other 98 class vectors
         '''
-        if allowed_categories is None:
+        # if allowed_categories is None:
+        if not allowed_categories:
             return list(set(current_categories)) #remove any duplicates
         
         current_categories_set =set(current_categories)
