@@ -23,7 +23,7 @@ class GroupByClassModel:
     Implementation of  the Group By Class Machine Learning Algorithms
     Features include model training,text classification,incremental learning, key word extraction
     '''
-    def __init__(self,name="",categories:List=None,increment_learning=True):
+    def __init__(self,name="",categories:List[str]=None,increment_learning=True):
         '''
         Instantiate GBC Model:
 
@@ -32,7 +32,7 @@ class GroupByClassModel:
         self.model_class_vectors:Dict={}
         self.model_unique_class_averages:Dict={}
         self.model_combined_classterm_weights:Dict={}
-        self.model_categories:List = categories
+        self.model_categories:List = [category.lower() for category in categories]
         # self.unique_class_average=0
         if self.model_categories is None:
             self.allow_new_labels=True
@@ -51,6 +51,7 @@ class GroupByClassModel:
         use a model retrieved from persistence store
         '''
         self.name:str=retrieved_model["name"]
+        self.number_of_documents:int=retrieved_model["number_of_documents"]
         if self.increment_learning:
             self.model_trained:bool=retrieved_model["trained"]
         else:

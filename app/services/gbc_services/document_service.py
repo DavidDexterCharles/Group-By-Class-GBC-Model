@@ -14,7 +14,7 @@ class Document:
     def __init__(self,content, categories:List,term_vector):
         self.id = str(uuid.uuid4())
         self.content = content
-        self.categories = categories
+        self.categories = [category.lower() for category in categories]
         self.term_vector:Counter = term_vector
 
 # class Documents:
