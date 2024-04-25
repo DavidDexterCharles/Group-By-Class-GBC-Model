@@ -57,7 +57,7 @@ async def train(request_data: list[Article],modelname:str="model",increment_lear
     '''
     train model
     '''
-    class_names=['Plane','Car','Bird','Cat','Deer','Dog','Frog','Horse','Ship','Truck']
+    class_names=[]#['Plane','Car','Bird','Cat','Deer','Dog','Frog','Horse','Ship','Truck']
     model=GroupByClassModel(name=modelname,categories=class_names,increment_learning=increment_learning)
     db = mongo_client["gbc_db"]
     model_collection = db["model"]
