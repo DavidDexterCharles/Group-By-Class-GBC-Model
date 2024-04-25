@@ -1,5 +1,5 @@
 # pylint: disable=C0115:missing-class-docstring,C0114:missing-module-docstring,C0301:line-too-long,W0707:raise-missing-from
-from bson import ObjectId
+# from bson import ObjectId
 from pymongo import MongoClient
 from fastapi import APIRouter, Depends, HTTPException
 from app.api.endpoints.ml_models.model_metrics import ModelMetrics
