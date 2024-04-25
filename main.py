@@ -2,7 +2,7 @@
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 import uvicorn
-from app.api.endpoints import index,user,articles,cnn
+from app.api.endpoints import index,user,articles,cnn,evaluate
 app = FastAPI(docs_url="/docs")
 app.add_middleware(
     CORSMiddleware,
@@ -16,6 +16,7 @@ app.include_router(index.router)
 app.include_router(user.router)
 app.include_router(articles.router)
 app.include_router(cnn.router)
+app.include_router(evaluate.router)
 
 if __name__ == '__main__':
     uvicorn.run('main:app',reload=True,port=8084)
