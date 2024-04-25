@@ -32,11 +32,12 @@ class GroupByClassModel:
         self.model_class_vectors:Dict={}
         self.model_unique_class_averages:Dict={}
         self.model_combined_classterm_weights:Dict={}
-        self.model_categories:List = [category.lower() for category in categories]
+        self.model_categories:List = categories
         # self.unique_class_average=0
         if self.model_categories is None:
             self.allow_new_labels=True
         else:
+            self.model_categories:List = [category.lower() for category in categories]
             self.allow_new_labels=False
         
         self.increment_learning=increment_learning

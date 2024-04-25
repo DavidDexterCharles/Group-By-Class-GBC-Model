@@ -36,3 +36,6 @@ class ModelMetrics:
         message=f"Bayes F1 Score: {f1}"
         print(message)
         return {"message":message}
+
+    def gbc_model(self):
+        return "f1 score"
