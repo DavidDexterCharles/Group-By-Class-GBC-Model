@@ -62,6 +62,21 @@ class GroupByClassModel:
         self.model_combined_classterm_weights:Dict=retrieved_model["combined_classterm_weights"]
         self.model_categories:List = retrieved_model["categories"]
 
+    def get_model(self):
+        '''
+        get_model
+        '''
+        trained_model ={
+        "name":self.name,
+        "number_of_documents":self.number_of_documents,
+        "trained":self.model_trained,
+        "categories":self.model_categories,
+        "class_vectors":self.model_class_vectors,
+        "combined_classterm_weights":self.model_combined_classterm_weights,
+        "unique_class_averages":self.model_unique_class_averages
+        }
+        return trained_model
+
     def classify(self,data):
         '''
         classify

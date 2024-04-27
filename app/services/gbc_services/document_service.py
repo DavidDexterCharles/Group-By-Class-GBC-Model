@@ -44,7 +44,7 @@ class DocumentService:
         '''
         try:
             if string_to_json:
-                data = json.loads(json_data)
+                data = json_data#json.loads(json_data)
                 documents_data = data
                 documents = [
                     Document(doc['content'], doc['categories'],self.term_vector(doc['content']))
@@ -69,7 +69,8 @@ class DocumentService:
         '''
         converts provided doc to a term_vector
         '''
-        tv=Counter(self._pre_process(doc).split(" "))
+        # tv=Counter(self._pre_process(doc).split(" "))
+        tv=Counter(doc.split(" "))
         return tv
     def _pre_process(self,text):
         text = text.lower()

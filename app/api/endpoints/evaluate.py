@@ -48,9 +48,10 @@ async def f1score(request_data: list[Article]):#, db = Depends(get_db)):
     '''
 
     mm= ModelMetrics()
-    bayes=mm.naive_bayes()
+    # bayes=mm.naive_bayes()
+    gbc_binary=mm.gbc_binary()
 
-    return bayes
+    return gbc_binary
 
 @router.post("/train")
 async def train(request_data: list[Article],modelname:str="model",increment_learning:bool=True,mongo_client: MongoClient = Depends(get_mongo_client)):
