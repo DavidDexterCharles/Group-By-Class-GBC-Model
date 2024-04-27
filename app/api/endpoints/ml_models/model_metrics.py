@@ -20,12 +20,15 @@ def format_data(X, y):
             "categories": ["malignant" if y[i] == 0 else "benign"]  # Convert target to corresponding category
         }
         formatted_data.append(instance)
+        # if i==20:
+        #     break
     
     return formatted_data
 
 class ModelMetrics:
 
     def __init__(self):
+        # https://archive.ics.uci.edu/dataset/17/breast+cancer+wisconsin+diagnostic
         self.data_breast_cancer=load_breast_cancer()
     
     def gbc_binary(self):
@@ -46,8 +49,8 @@ class ModelMetrics:
         # You can use these formatted datasets to train and evaluate your model
         model=GroupByClassModel()
         model.train(formatted_train_data,True)
-        return model.get_categories()
-        # return model.get_model()
+        # return model.get_categories()
+        return model.get_model()
 
     def naive_bayes(self):
         '''

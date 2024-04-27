@@ -33,7 +33,7 @@ def main():
 
 
 @router.post("/f1score")
-async def f1score(request_data: list[Article]):#, db = Depends(get_db)):
+async def f1score(request_data: list[Article],mongo_client: MongoClient = Depends(get_mongo_client)):#, db = Depends(get_db)):
     '''
     return f1score
     '''
@@ -47,11 +47,18 @@ async def f1score(request_data: list[Article]):#, db = Depends(get_db)):
     return  result
     '''
 
+    db = mongo_client["gbc_db"]
+    model_collection = db["model"]
+    first_item = model_collection.find_one()
+    
+
+    
     mm= ModelMetrics()
     # bayes=mm.naive_bayes()
-    gbc_binary=mm.gbc_binary()
+    gbc_model_1:dict=mm.gbc_binary()
+    model_collection.replace_one({"name": gbc_model_1["name"]},gbc_model_1, upsert=True)
 
-    return gbc_binary
+    return gbc_model_1["categories"]
 
 @router.post("/train")
 async def train(request_data: list[Article],modelname:str="model",increment_learning:bool=True,mongo_client: MongoClient = Depends(get_mongo_client)):

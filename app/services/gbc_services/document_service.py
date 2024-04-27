@@ -70,10 +70,10 @@ class DocumentService:
         converts provided doc to a term_vector
         '''
         # tv=Counter(self._pre_process(doc).split(" "))
-        tv=Counter(doc.split(" "))
+        tv=Counter(doc.lower().split(" "))
         return tv
     def _pre_process(self,text):
-        text = text.lower()
+        # text = text.lower()
         # remove tags
         text = re.sub("</?.*?>", " <> ", text)  
         # remove special characters and digits
