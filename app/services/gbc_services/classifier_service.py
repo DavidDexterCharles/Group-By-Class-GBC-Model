@@ -38,6 +38,19 @@ class ClassifierService:
         self.ds:DocumentService=DocumentService()
         self.combined_classterm_weights=combined_classterm_weights
     
+    def get_max_category(self,classification:dict):
+        '''
+        ## Return the category with the highest value:
+        
+        e.g.
+        {'malignant': 1.0, 'benign': 4.0}
+        When you call get_max_category(classification), 
+        it will return the string ('malignant', 'benign', etc.)
+        with the highest value in the classification dictionary
+        '''
+        max_category = max(classification, key=classification.get)
+        return max_category
+
     def classify(self,data):
         '''
         classify provided document by converting the data to a queryvector and finding dot product

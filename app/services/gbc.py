@@ -46,6 +46,23 @@ class GroupByClassModel:
         self.name = f"{name}_{uuid.uuid4()}"
         
         self.number_of_documents=0
+        self.f1_score=0
+        self.precision=0
+        self.true_positive=0
+        self.true_ngative=0
+        self.false_positive=0
+        self.false_ngative=0
+
+    def _set_f1_socre(self,outcome):
+        '''
+        TP = the number of instances that are correctly predicted as positive by the model
+          and are actually positive according to the ground truth or the actual labels
+        FP= the number of instances that are incorrectly predicted as positive by the model but
+            are actually negative according to the ground truth or the actual labels
+        FN=  the number of instances that are incorrectly predicted as negative by the model but 
+            are actually positive according to the ground truth or the actual labels
+        '''
+        # TP
 
     def set_model(self,retrieved_model):
         '''
@@ -82,13 +99,15 @@ class GroupByClassModel:
         classify
         '''
         cs = ClassifierService(self.model_class_vectors,self.model_categories,self.model_combined_classterm_weights)
-        results={}
+        result={}
         if isinstance(data, list):
             labeled_documents=data
             y_pred=[]
             for index,document in enumerate(labeled_documents):
                 result= cs.classify(document["content"])
                 document["prediction"]=result
+                document["prediction_max"]=cs.get_max_category(result)
+                # self._set_f1_socre(document[""])
                 # y_pred.append(result)
         else:
             result= cs.classify(data)
