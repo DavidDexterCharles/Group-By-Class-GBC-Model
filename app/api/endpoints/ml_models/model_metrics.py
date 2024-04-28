@@ -13,7 +13,8 @@ def format_data(X, y):
 
     for i in range(len(X)):
         # Concatenate each feature with its index/position
-        feature_strings = [f"{idx}:{val}" for idx, val in enumerate(X[i])]
+        # feature_strings = [f"{idx}:{val}" for idx, val in enumerate(X[i])]
+        feature_strings = [f"{idx}:{round(val,2)}" for idx, val in enumerate(X[i])]
         instance = {
             # "content": " ".join(map(str, X[i])),  # Convert feature array to space seperated string
             "content": " ".join(feature_strings),  # Convert feature array to space seperated string
@@ -49,6 +50,7 @@ class ModelMetrics:
         # You can use these formatted datasets to train and evaluate your model
         model=GroupByClassModel()
         model.train(formatted_train_data,True)
+        model.classify(formatted_test_data)
         # return model.get_categories()
         return model.get_model()
 

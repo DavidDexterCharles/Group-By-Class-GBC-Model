@@ -3,7 +3,7 @@
 #pylint: disable=C0304:missing-final-newline
 #pylint: disable=C0115:missing-class-docstring
 #pylint: disable=C0303:trailing-whitespace
-#pylint: disable=C0301:line-too-long
+#pylint: disable=C0301:line-too-long,W0612:unused-variable
 
 from collections import Counter
 from typing import Dict, List
@@ -82,7 +82,18 @@ class GroupByClassModel:
         classify
         '''
         cs = ClassifierService(self.model_class_vectors,self.model_categories,self.model_combined_classterm_weights)
-        return cs.classify(data)
+        results={}
+        if isinstance(data, list):
+            labeled_documents=data
+            y_pred=[]
+            for index,document in enumerate(labeled_documents):
+                result= cs.classify(document["content"])
+                document["prediction"]=result
+                # y_pred.append(result)
+        else:
+            result= cs.classify(data)
+        
+        return result
         
     def train(self,json_data,string_to_json=False):
         '''
