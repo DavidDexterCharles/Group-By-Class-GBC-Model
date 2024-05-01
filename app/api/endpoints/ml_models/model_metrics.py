@@ -1,4 +1,4 @@
-#pylint: disable=C0200:consider-using-enumerate
+#pylint: disable=C0200:consider-using-enumerate,C0301:line-too-long
 from sklearn.datasets import load_breast_cancer
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
@@ -16,7 +16,7 @@ def format_data(documents, labels):
     for i in range(len(documents)):
         # Concatenate each feature with its index/position
         # feature_strings = [f"{idx}:{val}" for idx, val in enumerate(documents[i])]
-        feature_strings = [f"{idx}:{round(val,1)}" for idx, val in enumerate(documents[i])]
+        feature_strings = [f"{idx}:{round(val,2)}" for idx, val in enumerate(documents[i])]
         instance = {
             # "content": " ".join(map(str, documents[i])),  # Convert feature array to space seperated string
             "content": " ".join(feature_strings),  # Convert feature array to space seperated string
@@ -55,6 +55,11 @@ class ModelMetrics:
         model.classify(formatted_test_data)
         # return model.get_categories()
         gbc_model_1=model.get_model()
+        # Calculate the F1 score
+        y_pred_binary = [0 if val == "malignant" else 1 for idx, val in enumerate(gbc_model_1["y_pred"])]
+        f1 = f1_score(y_test, y_pred_binary)
+        message=f"GBC F1 Score: {f1}"
+        print(message)
         print(confusion_matrix(gbc_model_1["y_true"], gbc_model_1["y_pred"], labels=gbc_model_1["categories"]))
         print(classification_report(gbc_model_1["y_true"], gbc_model_1["y_pred"], labels=gbc_model_1["categories"]))
 
@@ -91,7 +96,6 @@ class ModelMetrics:
 
         # Calculate the F1 score
         f1 = f1_score(y_test, y_pred)
-
         message=f"Bayes F1 Score: {f1}"
         print(message)
 
