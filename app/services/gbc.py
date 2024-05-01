@@ -52,6 +52,8 @@ class GroupByClassModel:
         self.true_ngative=0
         self.false_positive=0
         self.false_ngative=0
+        self.y_true=[]
+        self.y_pred=[]
 
     def _set_f1_socre(self,outcome):
         '''
@@ -92,6 +94,10 @@ class GroupByClassModel:
         "combined_classterm_weights":self.model_combined_classterm_weights,
         "unique_class_averages":self.model_unique_class_averages
         }
+        if self.y_true and self.y_pred:
+            trained_model["y_true"] =self.y_true
+            trained_model["y_pred"] =self.y_pred
+
         return trained_model
 
     def classify(self,data):
@@ -100,20 +106,28 @@ class GroupByClassModel:
         '''
         cs = ClassifierService(self.model_class_vectors,self.model_categories,self.model_combined_classterm_weights)
         result={}
+        
         if isinstance(data, list):
             labeled_documents=data
-            y_pred=[]
             for index,document in enumerate(labeled_documents):
                 result= cs.classify(document["content"])
-                document["prediction"]=result
-                document["prediction_max"]=cs.get_max_category(result)
-                # self._set_f1_socre(document[""])
-                # y_pred.append(result)
+                self.y_true.append(document["categories"][0])
+                if result:
+                    document["prediction"]=result
+                    document["prediction_max"]=cs.get_max_category(result)
+                    self.y_pred.append(document["prediction_max"])
+                    # self._set_f1_socre(document[""])
+                    # y_pred.append(result)
+                else:
+                    document["prediction"]=''
+                    document["prediction_max"]=''
+                    self.y_pred.append('')
         else:
-            result= cs.classify(data)
+            result= cs.classify(data)            
         
         return result
-        
+
+
     def train(self,json_data,string_to_json=False):
         '''
         Trains GBC Model:

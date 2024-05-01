@@ -3,22 +3,24 @@ from sklearn.datasets import load_breast_cancer
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import f1_score
+from sklearn.metrics import confusion_matrix , classification_report
+
 
 from app.api.pydanticmodels import Article
 from app.services.gbc import GroupByClassModel
 # https://chat.openai.com/c/f1010516-2c2c-41be-9f50-fa9e3c8d4da8
 
-def format_data(X, y):
+def format_data(documents, labels):
     formatted_data = []
 
-    for i in range(len(X)):
+    for i in range(len(documents)):
         # Concatenate each feature with its index/position
-        # feature_strings = [f"{idx}:{val}" for idx, val in enumerate(X[i])]
-        feature_strings = [f"{idx}:{round(val,2)}" for idx, val in enumerate(X[i])]
+        # feature_strings = [f"{idx}:{val}" for idx, val in enumerate(documents[i])]
+        feature_strings = [f"{idx}:{round(val,1)}" for idx, val in enumerate(documents[i])]
         instance = {
-            # "content": " ".join(map(str, X[i])),  # Convert feature array to space seperated string
+            # "content": " ".join(map(str, documents[i])),  # Convert feature array to space seperated string
             "content": " ".join(feature_strings),  # Convert feature array to space seperated string
-            "categories": ["malignant" if y[i] == 0 else "benign"]  # Convert target to corresponding category
+            "categories": ["malignant" if labels[i] == 0 else "benign"]  # Convert target to corresponding category, asumes each doc has one label
         }
         formatted_data.append(instance)
         # if i==20:
@@ -52,7 +54,11 @@ class ModelMetrics:
         model.train(formatted_train_data,True)
         model.classify(formatted_test_data)
         # return model.get_categories()
-        return model.get_model()
+        gbc_model_1=model.get_model()
+        print(confusion_matrix(gbc_model_1["y_true"], gbc_model_1["y_pred"], labels=gbc_model_1["categories"]))
+        print(classification_report(gbc_model_1["y_true"], gbc_model_1["y_pred"], labels=gbc_model_1["categories"]))
+
+        return gbc_model_1
 
     def naive_bayes(self):
         '''
@@ -74,12 +80,24 @@ class ModelMetrics:
 
         # Make predictions on the test set
         y_pred = model.predict(X_test)
+        
+        # y_true_text=[]
+        # y_pred_text=[]
+        # for i in range (len(y_pred)):
+        #     y_true_text.append(X_test.target_names[X_test.target[i]])
+        #     y_pred_text.append(X_test.target_names[y_pred[i]])
+        #     if y_pred[i]==X_test.target[i]:
+        #         count=count+1
 
         # Calculate the F1 score
         f1 = f1_score(y_test, y_pred)
 
         message=f"Bayes F1 Score: {f1}"
         print(message)
+
+        print(confusion_matrix(y_test, y_pred, labels=[0,1]))
+        print(classification_report(y_test, y_pred, labels=[0,1]))
+
         return {"message":message}
 
     def gbc_model(self):

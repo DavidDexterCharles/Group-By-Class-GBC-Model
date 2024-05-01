@@ -51,13 +51,12 @@ async def f1score(request_data: list[Article],mongo_client: MongoClient = Depend
     model_collection = db["model"]
     first_item = model_collection.find_one()
     
-
-    
     mm= ModelMetrics()
-    # bayes=mm.naive_bayes()
     gbc_model_1:dict=mm.gbc_binary()
     model_collection.replace_one({"name": gbc_model_1["name"]},gbc_model_1, upsert=True)
 
+    bayes=mm.naive_bayes()
+    
     return gbc_model_1["categories"]
 
 @router.post("/train")
