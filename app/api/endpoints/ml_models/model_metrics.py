@@ -2,7 +2,7 @@
 from sklearn.datasets import load_breast_cancer
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, hamming_loss,accuracy_score
 from sklearn.metrics import confusion_matrix , classification_report
 
 
@@ -60,6 +60,14 @@ class ModelMetrics:
         f1 = f1_score(y_test, y_pred_binary)
         message=f"GBC F1 Score: {f1}"
         print(message)
+        # Calculate subset accuracy
+        subset_accuracy = accuracy_score(y_test, y_pred_binary)
+        # Calculate Hamming loss
+        hamming_loss_value = hamming_loss(y_test, y_pred_binary)
+        message=f"GBC subset_accuracy: {subset_accuracy}"
+        print(message)
+        message=f"GBC hamming_loss_value: {hamming_loss_value}"
+        print(message)
         print(confusion_matrix(gbc_model_1["y_true"], gbc_model_1["y_pred"], labels=gbc_model_1["categories"]))
         print(classification_report(gbc_model_1["y_true"], gbc_model_1["y_pred"], labels=gbc_model_1["categories"]))
 
@@ -98,7 +106,14 @@ class ModelMetrics:
         f1 = f1_score(y_test, y_pred)
         message=f"Bayes F1 Score: {f1}"
         print(message)
-
+        # Calculate subset accuracy
+        subset_accuracy = accuracy_score(y_test, y_pred)
+        # Calculate Hamming loss
+        hamming_loss_value = hamming_loss(y_test, y_pred)
+        message=f"GBC subset_accuracy: {subset_accuracy}"
+        print(message)
+        message=f"GBC hamming_loss_value: {hamming_loss_value}"
+        print(message)
         print(confusion_matrix(y_test, y_pred, labels=[0,1]))
         print(classification_report(y_test, y_pred, labels=[0,1]))
 
