@@ -5,7 +5,7 @@
 # import redis
 from bson import ObjectId
 from pymongo import MongoClient
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException,Request
 from app.api.pydanticmodels import Article
 from app.services.gbc import GroupByClassModel
 
@@ -34,6 +34,62 @@ def main():
     returns Articles
     '''
     return "Articles VIEW"
+
+
+@router.post("/classifydata")
+async def post_classifydata(request: Request,mongo_client:MongoClient = Depends(get_mongo_client)):
+    '''
+    returns classifydata
+    '''
+    model=GroupByClassModel()
+    db = mongo_client["gbc_db"]
+    model_collection = db["model"]
+    first_item = model_collection.find_one()
+
+    if first_item:
+        model.set_model(first_item)
+
+    user_agent = request.headers.get("user-agent")
+    # Access request body
+    data = await request.json()
+    # Access request query parameters
+    query_params = dict(request.query_params)
+    # Process the request and return a response
+    response_data = {"user_agent": user_agent, "data": data, "query_params": query_params}
+
+    return response_data
+
+@router.post("/healthtrain")
+async def healthtrain(request_data: list[Article],modelname:str="model",increment_learning:bool=True,mongo_client: MongoClient = Depends(get_mongo_client)):
+    '''
+    train model
+    '''
+    class_names=None#['Plane','Car','Bird','Cat','Deer','Dog','Frog','Horse','Ship','Truck']
+    model=GroupByClassModel(name=modelname,categories=class_names,increment_learning=increment_learning)
+    db = mongo_client["gbc_db"]
+    model_collection = db["model"]
+
+    first_item = model_collection.find_one()
+
+    if first_item:
+        model.set_model(first_item)
+
+    model.train(request_data)
+    # model.get_categories(True)
+    trained_model ={
+        "name":model.name,
+        "number_of_documents":model.number_of_documents,
+        "trained":model.model_trained,
+        "categories":model.model_categories,
+        "class_vectors":model.model_class_vectors,
+        "combined_classterm_weights":model.model_combined_classterm_weights,
+        "unique_class_averages":model.model_unique_class_averages
+    }
+    try:
+        result = model_collection.replace_one({"name": model.name},trained_model, upsert=True)
+        return trained_model
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"message: {str(e)}")
 
 
 @router.post("/articles")
