@@ -153,8 +153,20 @@ class GroupByClassModel:
         else:
             self._train_new_model(ts)
         
-        print(f"{self.model_class_vectors}\n")
+        self.model_combined_classterm_weights={}#always full update the combined calss termweights
+        for category in self.model_class_vectors:
+            class_vector=self.model_class_vectors[category]
+            for term in class_vector:
+                term_weight=class_vector[term]
+                if term in self.model_combined_classterm_weights:
+                    self.model_combined_classterm_weights[term]+=term_weight
+                else:
+                    self.model_combined_classterm_weights[term]=term_weight
+        print(f"model_class_vectors: {self.model_class_vectors}\n")
+        print(f"model_combined_classterm_weights: {self.model_combined_classterm_weights}\n")
+        print(f"model_categories: {self.model_categories}\n")
         print(f"unique_class_averages:{self.model_unique_class_averages}\n")
+        print(f"number_of_documents: {self.number_of_documents}\n")
 
     def _update_existing_model(self,ts:TrainerService):
         '''
@@ -172,7 +184,7 @@ class GroupByClassModel:
         self.model_categories=ts.categories
         self.model_class_vectors=ts.class_vectors
         self.model_unique_class_averages=ts.unique_class_averages
-        self.model_combined_classterm_weights=ts.combined_classterm_weights
+        # self.model_combined_classterm_weights=ts.combined_classterm_weights
 
 
     def _train_new_model(self,ts:TrainerService):
@@ -187,7 +199,7 @@ class GroupByClassModel:
         self.model_class_vectors=ts.class_vectors
         self.model_unique_class_averages=ts.unique_class_averages
         self.model_trained=True
-        self.model_combined_classterm_weights=ts.combined_classterm_weights
+        # self.model_combined_classterm_weights=ts.combined_classterm_weights
 
 
     def get_number_of_documents(self):

@@ -21,7 +21,7 @@ class TrainerService:
         self.documents=documents
         self.categories=categories
         self.allow_new_labels=allow_new_labels
-        self.combined_classterm_weights={}
+        # self.combined_classterm_weights={}
        
 
     def _get_valid_categories(self,current_categories,allowed_categories):
@@ -92,10 +92,10 @@ class TrainerService:
             for term in class_vector:
                 term_weight=round(class_vector[term] / unique_class_average,2)
                 class_vector[term] = term_weight
-                if term in self.combined_classterm_weights:
-                    self.combined_classterm_weights[term]+=term_weight
-                else:
-                    self.combined_classterm_weights[term]=term_weight
+                # if term in self.combined_classterm_weights:
+                #     self.combined_classterm_weights[term]+=term_weight
+                # else:
+                #     self.combined_classterm_weights[term]=term_weight
     
     def _get_unique_class_average(self,unique_weights):
         '''
@@ -144,7 +144,7 @@ class TrainerService:
         Used For Incemental learning
         destandardize_class_vectors
         '''
-        self.combined_classterm_weights={}
+        # self.combined_classterm_weights={}
         for category in valid_categories:
             if category not in self.class_vectors:
                 #if category from valid_categories list does not 

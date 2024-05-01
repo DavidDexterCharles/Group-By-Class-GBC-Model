@@ -37,7 +37,7 @@ def main():
 
 
 @router.post("/classifydata")
-async def post_classifydata(request: Request,mongo_client:MongoClient = Depends(get_mongo_client)):
+async def post_classifydata(article_data:str,request: Request,mongo_client:MongoClient = Depends(get_mongo_client)):
     '''
     returns classifydata
     '''
@@ -49,15 +49,24 @@ async def post_classifydata(request: Request,mongo_client:MongoClient = Depends(
     if first_item:
         model.set_model(first_item)
 
-    user_agent = request.headers.get("user-agent")
-    # Access request body
-    data = await request.json()
-    # Access request query parameters
-    query_params = dict(request.query_params)
-    # Process the request and return a response
-    response_data = {"user_agent": user_agent, "data": data, "query_params": query_params}
+    try:
+        if first_item:
+            model.set_model(first_item)
+            result=model.classify(article_data)
+            return result
+        else:
+            return {"message":"no trained model found"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"message: {str(e)}")
 
-    return response_data
+    # user_agent = request.headers.get("user-agent")
+    # # Access request body
+    # data = await request.json()
+    # # Access request query parameters
+    # query_params = dict(request.query_params)
+    # # Process the request and return a response
+    # response_data = {"user_agent": user_agent, "data": data, "query_params": query_params}
+    # return response_data
 
 @router.post("/healthtrain")
 async def healthtrain(request_data: list[Article],modelname:str="model",increment_learning:bool=True,mongo_client: MongoClient = Depends(get_mongo_client)):
