@@ -3,7 +3,7 @@
 #pylint: disable=C0304:missing-final-newline
 #pylint: disable=C0115:missing-class-docstring
 #pylint: disable=C0303:trailing-whitespace
-#pylint: disable=C0301:line-too-long
+#pylint: disable=C0301:line-too-long,W0612:unused-variable
 
 from collections import Counter
 from typing import Dict, List
@@ -23,7 +23,7 @@ class GroupByClassModel:
     Implementation of  the Group By Class Machine Learning Algorithms
     Features include model training,text classification,incremental learning, key word extraction
     '''
-    def __init__(self,name="",categories:List=None,increment_learning=True):
+    def __init__(self,name="",categories:List[str]=None,increment_learning=True):
         '''
         Instantiate GBC Model:
 
@@ -37,6 +37,7 @@ class GroupByClassModel:
         if self.model_categories is None:
             self.allow_new_labels=True
         else:
+            self.model_categories:List = [category.lower() for category in categories]
             self.allow_new_labels=False
         
         self.increment_learning=increment_learning
@@ -45,12 +46,32 @@ class GroupByClassModel:
         self.name = f"{name}_{uuid.uuid4()}"
         
         self.number_of_documents=0
+        self.f1_score=0
+        self.precision=0
+        self.true_positive=0
+        self.true_ngative=0
+        self.false_positive=0
+        self.false_ngative=0
+        self.y_true=[]
+        self.y_pred=[]
+
+    def _set_f1_socre(self,outcome):
+        '''
+        TP = the number of instances that are correctly predicted as positive by the model
+          and are actually positive according to the ground truth or the actual labels
+        FP= the number of instances that are incorrectly predicted as positive by the model but
+            are actually negative according to the ground truth or the actual labels
+        FN=  the number of instances that are incorrectly predicted as negative by the model but 
+            are actually positive according to the ground truth or the actual labels
+        '''
+        # TP
 
     def set_model(self,retrieved_model):
         '''
         use a model retrieved from persistence store
         '''
         self.name:str=retrieved_model["name"]
+        self.number_of_documents:int=retrieved_model["number_of_documents"]
         if self.increment_learning:
             self.model_trained:bool=retrieved_model["trained"]
         else:
@@ -60,13 +81,53 @@ class GroupByClassModel:
         self.model_combined_classterm_weights:Dict=retrieved_model["combined_classterm_weights"]
         self.model_categories:List = retrieved_model["categories"]
 
+    def get_model(self):
+        '''
+        get_model
+        '''
+        trained_model ={
+        "name":self.name,
+        "number_of_documents":self.number_of_documents,
+        "trained":self.model_trained,
+        "categories":self.model_categories,
+        "class_vectors":self.model_class_vectors,
+        "combined_classterm_weights":self.model_combined_classterm_weights,
+        "unique_class_averages":self.model_unique_class_averages
+        }
+        if self.y_true and self.y_pred:
+            trained_model["y_true"] =self.y_true
+            trained_model["y_pred"] =self.y_pred
+
+        return trained_model
+
     def classify(self,data):
         '''
         classify
         '''
         cs = ClassifierService(self.model_class_vectors,self.model_categories,self.model_combined_classterm_weights)
-        return cs.classify(data)
+        result={}
         
+        if isinstance(data, list):
+            labeled_documents=data
+            for index,document in enumerate(labeled_documents):
+                result= cs.classify(document["content"])
+                self.y_true.append(document["categories"][0])
+                if result:
+                    document["prediction"]=result
+                    document["prediction_max"]=cs.get_max_category(result)
+                    self.y_pred.append(document["prediction_max"])
+                    # self._set_f1_socre(document[""])
+                    # y_pred.append(result)
+                else:
+                    document["prediction"]=''
+                    document["prediction_max"]=''
+                    self.y_pred.append('')
+        else:
+            result= cs.classify(data)            
+        
+        return result
+
+
     def train(self,json_data,string_to_json=False):
         '''
         Trains GBC Model:
@@ -108,10 +169,10 @@ class GroupByClassModel:
             # print(f"Destandardize:{ts.class_vectors}\n")
             ts.re_standardize_class_vectors(valid_categories)
             
-            self.model_categories=ts.categories
-            self.model_class_vectors=ts.class_vectors
-            self.model_unique_class_averages=ts.unique_class_averages
-            self.model_combined_classterm_weights=ts.combined_classterm_weights
+        self.model_categories=ts.categories
+        self.model_class_vectors=ts.class_vectors
+        self.model_unique_class_averages=ts.unique_class_averages
+        self.model_combined_classterm_weights=ts.combined_classterm_weights
 
 
     def _train_new_model(self,ts:TrainerService):

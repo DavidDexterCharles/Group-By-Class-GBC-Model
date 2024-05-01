@@ -1,11 +1,8 @@
-# pylint: disable=C0115:missing-class-docstring,C0114:missing-module-docstring
-# pylint: disable=C0301:line-too-long
-# pylint: disable=W0707:raise-missing-from
-# import json
-# import redis
-from bson import ObjectId
+# pylint: disable=C0115:missing-class-docstring,C0114:missing-module-docstring,C0301:line-too-long,W0707:raise-missing-from
+# from bson import ObjectId
 from pymongo import MongoClient
 from fastapi import APIRouter, Depends, HTTPException
+from app.api.endpoints.ml_models.model_metrics import ModelMetrics
 from app.api.pydanticmodels import Article
 from app.services.gbc import GroupByClassModel
 
@@ -13,7 +10,6 @@ router = APIRouter()
 
 # https://youtu.be/VQnmcBnguPY?t=245
 # accessing mongodb cluster
-
 # Define your MongoDB connection URL
 # mongodb+srv://gbcuser:<password>@gbc.vny6qh7.mongodb.net/?retryWrites=true&w=majority&appName=gbc
 MONGO_URI = "mongodb+srv://gbcuser:gbcuser@gbc.vny6qh7.mongodb.net/?retryWrites=true&w=majority&appName=gbc"
@@ -28,36 +24,47 @@ def get_mongo_client():
     client.close()
 
 
-@router.get("/articles")
+@router.get("/evaluate")
 def main():
     '''
-    returns Articles
+    returns Evaluation Hamming Loss, F1 Score, Precision, Recall, or Area Under the ROC Curve (AUC-ROC)
     '''
-    return "Articles VIEW"
+    return "Evaluate Hamming Loss, F1 Score, Precision, Recall, or Area Under the ROC Curve (AUC-ROC)"
 
 
-@router.post("/articles")
-async def articles(request_data: list[Article]):#, db = Depends(get_db)):
+@router.post("/f1score")
+async def f1score(request_data: list[Article],mongo_client: MongoClient = Depends(get_mongo_client)):#, db = Depends(get_db)):
     '''
-    add articles
+    return f1score
     '''
-    # redis_client = redis.StrictRedis(host='localhost', port=6379, db=0)
 
-    result="test"
-    # jsondata=request_data#json.dump(request_data)
+    '''
     model=GroupByClassModel()
     model.train(request_data)
     # # model3.train(example_json_data2)
     # model.get_categories(True)
     result=model.classify("Congratulations! You've been selected as the winner of our exclusive contest. Claim your prize now!")
     return  result
+    '''
+
+    db = mongo_client["gbc_db"]
+    model_collection = db["model"]
+    first_item = model_collection.find_one()
+    
+    mm= ModelMetrics()
+    gbc_model_1:dict=mm.gbc_binary()
+    model_collection.replace_one({"name": gbc_model_1["name"]},gbc_model_1, upsert=True)
+
+    bayes=mm.naive_bayes()
+    
+    return gbc_model_1["categories"]
 
 @router.post("/train")
 async def train(request_data: list[Article],modelname:str="model",increment_learning:bool=True,mongo_client: MongoClient = Depends(get_mongo_client)):
     '''
     train model
     '''
-    class_names=[]#['Plane','Car','Bird','Cat','Deer','Dog','Frog','Horse','Ship','Truck']
+    class_names=['Plane','Car','Bird','Cat','Deer','Dog','Frog','Horse','Ship','Truck']
     model=GroupByClassModel(name=modelname,categories=class_names,increment_learning=increment_learning)
     db = mongo_client["gbc_db"]
     model_collection = db["model"]

@@ -14,7 +14,7 @@ class Document:
     def __init__(self,content, categories:List,term_vector):
         self.id = str(uuid.uuid4())
         self.content = content
-        self.categories = categories
+        self.categories = [category.lower() for category in categories]
         self.term_vector:Counter = term_vector
 
 # class Documents:
@@ -44,7 +44,7 @@ class DocumentService:
         '''
         try:
             if string_to_json:
-                data = json.loads(json_data)
+                data = json_data#json.loads(json_data)
                 documents_data = data
                 documents = [
                     Document(doc['content'], doc['categories'],self.term_vector(doc['content']))
@@ -69,10 +69,11 @@ class DocumentService:
         '''
         converts provided doc to a term_vector
         '''
-        tv=Counter(self._pre_process(doc).split(" "))
+        # tv=Counter(self._pre_process(doc).split(" "))
+        tv=Counter(doc.lower().split(" "))
         return tv
     def _pre_process(self,text):
-        text = text.lower()
+        # text = text.lower()
         # remove tags
         text = re.sub("</?.*?>", " <> ", text)  
         # remove special characters and digits
