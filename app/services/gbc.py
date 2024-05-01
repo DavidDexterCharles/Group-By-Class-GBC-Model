@@ -111,7 +111,10 @@ class GroupByClassModel:
             labeled_documents=data
             for index,document in enumerate(labeled_documents):
                 result= cs.classify(document["content"])
-                self.y_true.append(document["categories"][0])
+                if document["categories"]:
+                    self.y_true.append(document["categories"][0])
+                # else:
+                #     self.y_true.append("none")
                 if result:
                     document["prediction"]=result
                     document["prediction_max"]=cs.get_max_category(result)

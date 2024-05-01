@@ -6,6 +6,14 @@ from sklearn.metrics import f1_score, hamming_loss,accuracy_score
 from sklearn.metrics import confusion_matrix , classification_report
 
 
+from sklearn.datasets import make_multilabel_classification
+from sklearn.model_selection import train_test_split
+from sklearn.multioutput import MultiOutputClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
+
+
+
 from app.api.pydanticmodels import Article
 from app.services.gbc import GroupByClassModel
 # https://chat.openai.com/c/f1010516-2c2c-41be-9f50-fa9e3c8d4da8
@@ -28,12 +36,89 @@ def format_data(documents, labels):
     
     return formatted_data
 
+def format_data_multi(X, y):
+    formatted_data = []
+    for i in range(len(X)):
+        # labels = [f"{j}" for j in range(len(y[i])) if y[i][j] == 1]
+        labels = []
+        for j in range(len(y[i])):
+            if y[i][j] == 1:
+                labels.append(f"{j}:{y[i][j]}")
+        document = {
+            "content": " ".join(map(str, X[i])),
+            "categories": labels
+        }
+        formatted_data.append(document)
+    return formatted_data
+
 class ModelMetrics:
 
     def __init__(self):
         # https://archive.ics.uci.edu/dataset/17/breast+cancer+wisconsin+diagnostic
         self.data_breast_cancer=load_breast_cancer()
     
+    def randomforest(self):
+        # Generate random multi-label dataset
+        X, y = make_multilabel_classification(n_samples=1000, n_features=20, n_classes=5, n_labels=3, random_state=42)
+
+        # Split the dataset into training and testing sets
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+        # Initialize the base classifier (Random Forest)
+        base_classifier = RandomForestClassifier(n_estimators=100, random_state=42)
+
+        # Initialize the MultiOutputClassifier
+        multi_label_classifier = MultiOutputClassifier(base_classifier, n_jobs=-1)
+
+        # Fit the classifier to the training data
+        multi_label_classifier.fit(X_train, y_train)
+
+        # Predict the labels for the test set
+        y_pred = multi_label_classifier.predict(X_test)
+
+        # Evaluate the classifier
+        accuracy = accuracy_score(y_test, y_pred)
+        print("Accuracy:", accuracy)
+
+        # Print classification report
+        print("Classification Report:")
+        print(classification_report(y_test, y_pred))
+
+    def gbc_multi(self):
+        # Generate random multi-label dataset
+        X, y = make_multilabel_classification(n_samples=1000, n_features=20, n_classes=5, n_labels=3, random_state=42)
+
+        # Split the dataset into training and testing sets
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        formatted_train_data = format_data_multi(X_train, y_train)
+        formatted_test_data = format_data_multi(X_test, y_test)
+        model=GroupByClassModel()
+        model.train(formatted_train_data,True)
+        model.classify(formatted_test_data)
+        gbc_model_1=model.get_model()
+        
+        # # Initialize the base classifier (Random Forest)
+        # base_classifier = RandomForestClassifier(n_estimators=100, random_state=42)
+
+        # # Initialize the MultiOutputClassifier
+        # multi_label_classifier = MultiOutputClassifier(base_classifier, n_jobs=-1)
+
+        # # Fit the classifier to the training data
+        # multi_label_classifier.fit(X_train, y_train)
+
+        # # Predict the labels for the test set
+        # y_pred = multi_label_classifier.predict(X_test)
+
+        print("y_test : ", y_test)
+
+        # Evaluate the classifier
+        # accuracy = accuracy_score(y_test, y_pred)
+        # print("Accuracy:", accuracy)
+
+        # # Print classification report
+        # print("Classification Report:")
+        # print(classification_report(y_test, y_pred))
+
     def gbc_binary(self):
         '''
         returns gbc metrics
