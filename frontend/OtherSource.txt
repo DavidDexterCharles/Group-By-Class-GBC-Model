@@ -1,0 +1,34 @@
+https://www.npmjs.com/package/vue-underscore
+npm install vue-underscore
+
+
+import Vue from 'vue';
+import underscore from 'vue-underscore';
+import App from './App';
+ 
+Vue.use(underscore);
+ 
+new Vue({
+  ...App
+}).$mount('#app');
+
+
+import {_} from 'vue-underscore';
+ 
+let testArr = [{id: 1}, {id:2}];
+let foundInfo = _.findWhere(testArr, {id:1});
+
+
+
+<script>
+export default {
+  methods: {
+    test () {
+      let testArr = [{id: 1}, {id:2}];
+  
+      let foundInfo = this.$_.findWhere(testArr, {id:1});
+    
+    }
+  }
+}
+</script> 
