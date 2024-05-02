@@ -113,7 +113,8 @@ class ModelMetrics:
 
         # Evaluate the classifier
         # accuracy = accuracy_score(y_test, y_pred)
-        # print("Accuracy:", accuracy)
+        accuracy = accuracy_score(y_test, gbc_model_1["y_pred"])
+        print("Accuracy:", accuracy)
 
         # # Print classification report
         # print("Classification Report:")
@@ -195,9 +196,9 @@ class ModelMetrics:
         subset_accuracy = accuracy_score(y_test, y_pred)
         # Calculate Hamming loss
         hamming_loss_value = hamming_loss(y_test, y_pred)
-        message=f"GBC subset_accuracy: {subset_accuracy}"
+        message=f"Bayes subset_accuracy: {subset_accuracy}"
         print(message)
-        message=f"GBC hamming_loss_value: {hamming_loss_value}"
+        message=f"Bayes hamming_loss_value: {hamming_loss_value}"
         print(message)
         print(confusion_matrix(y_test, y_pred, labels=[0,1]))
         print(classification_report(y_test, y_pred, labels=[0,1]))

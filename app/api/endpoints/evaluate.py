@@ -47,18 +47,34 @@ async def f1score(request_data: list[Article],mongo_client: MongoClient = Depend
     return  result
     '''
 
+
+#     a-articles going to label
+# 10 articles to label
+# 15, tags
+# find a way ,
+# levenstine string distance- semantic, measures how different 2 strings are 
+
+# 3 models
+# poe
+# gpt,mistral87b,bard/gemini
+
+# 5 labels/or 3 labels
+# 10 articles
+# 15 labels that we get are sufficiently differnt, best labels for the artticles
+
+
     db = mongo_client["gbc_db"]
     model_collection = db["model"]
     first_item = model_collection.find_one()
     
     mm= ModelMetrics()
-    # gbc_model_1:dict=mm.gbc_binary()
+    gbc_model_1:dict=mm.gbc_binary()
     # model_collection.replace_one({"name": gbc_model_1["name"]},gbc_model_1, upsert=True)
 
-    # bayes=mm.naive_bayes()
+    bayes=mm.naive_bayes()
 
-    # mm.randomforest()
-    mm.gbc_multi()
+    mm.randomforest()
+    # mm.gbc_multi()
     
     # return gbc_model_1["categories"]
     return "Output Generated"

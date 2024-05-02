@@ -65,7 +65,12 @@ class ClassifierService:
             if matching_terms:
                 related_vector = {key: mcv[key] for key in matching_terms}
                 for key in matching_terms:
-                    related_vector[key]=mcv[key]/self.combined_classterm_weights[key] #Penalize the Related Class Vectors using combined_classterm_weights
+                    if self.combined_classterm_weights[key] != 0:
+                        related_vector[key] = mcv[key] / self.combined_classterm_weights[key]
+                    else:
+                        # Handle division by zero gracefully, for example, by setting a default value
+                        related_vector[key] = 0  # or any other appropriate action
+                    # related_vector[key]=mcv[key]/self.combined_classterm_weights[key] #Penalize the Related Class Vectors using combined_classterm_weights
 
                 dot_product = sum(query_vector.get(key, 0) * related_vector.get(key, 0) for key in set(query_vector) & set(related_vector))
                 related_terms[category]=related_vector

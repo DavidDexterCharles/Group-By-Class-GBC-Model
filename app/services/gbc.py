@@ -113,8 +113,9 @@ class GroupByClassModel:
                 result= cs.classify(document["content"])
                 if document["categories"]:
                     self.y_true.append(document["categories"][0])
-                # else:
-                #     self.y_true.append("none")
+                else:
+                    # self.y_true.append("none")
+                    continue
                 if result:
                     document["prediction"]=result
                     document["prediction_max"]=cs.get_max_category(result)
