@@ -173,7 +173,9 @@ export default {
     classify() {
       this.loading = true;
       this.$http
-        .get(`${this.api}dummydata`)
+        .get(
+          `${this.api}classify_dashboard?article_content=${this.article.url}`
+        )
         .then(response => {
           const data = response.data;
           this.pieChartData = data.pieChartData;

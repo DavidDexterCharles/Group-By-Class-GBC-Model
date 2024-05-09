@@ -88,23 +88,30 @@ def get_articles2(page_number: int = Query(1, ge=1), page_size: int = Query(10, 
     return list(result)
 
 @router.post("/addarticle")
-def add_article(content: str,mongo_client:MongoClient = Depends(get_mongo_client)):
+def add_article(content: str,categories:str="",mongo_client:MongoClient = Depends(get_mongo_client)):
     '''
     returns added article
     '''
     db = mongo_client["gbc_db"]
+    article_train_collection = db["training_data"]
     article_collection = db["article"]
     # categories_collection = db["model_categories"]
     # class_vectors_collection = db["model_class_vectors"]
     # combined_classterm_weights_collection = db["model_combined_classterm_weights"]
     # unique_class_averages_collection = db["model_unique_class_averages"]
     # first_item = article_collection.find_one()
+    if categories:
+        labels=categories.split(',')
+    else:
+        labels=[]
     new_article = Article2(
         title=f"{' '.join(content.split()[:8])}...",
         source="",
         content=content,
-        categories=[]
+        categories=labels
     )
+    if categories:
+        article_train_collection.insert_one(dict(new_article))
     result = article_collection.insert_one(dict(new_article))
     inserted_article = article_collection.find_one({"_id": result.inserted_id})
     return inserted_article
@@ -133,6 +140,52 @@ def get_dummy_data():
     }
     return {"pieChartData": pie_chart_data, "barChartData": bar_chart_data}
 
+@router.get("/classify_dashboard")
+async def get_classify_dashboard(article_content,mongo_client:MongoClient = Depends(get_mongo_client)): 
+    '''
+    get_classify_dashboard
+    '''
+    classification_result=await post_classifydata(article_content,mongo_client)
+    return get_classification_dashboard(classification_result)
+
+def get_classification_dashboard(classification_result):
+    '''
+    get_classification_dashboard
+    '''
+    # classification_result = {
+    #     "other": 9.38432580407589,
+    #     "public health emergency preparedness": 9.38432580407589,
+    #     "covid19": 53.077116130616105,
+    #     "infectious disease response and prevention": 53.077116130616105,
+    #     "pandemic management and response": 53.077116130616105
+    # }
+
+    # Convert classification result into chart data format
+    labels = list(classification_result.keys())
+    data = list(classification_result.values())
+    pie_chart_data = {
+        "labels": labels,
+        "datasets": [{
+            "data": data,
+            "backgroundColor": ["#F7464A", "#46BFBD", "#FDB45C", "#949FB1", "#4D5360"],
+            "hoverBackgroundColor": ["#FF5A5E", "#5AD3D1", "#FFC870", "#A8B3C5", "#616774"]
+        }]
+    }
+
+    bar_chart_data = {
+        "labels": labels,
+        "datasets": [{
+            "label": "Classification Result",
+            "data": data,
+            "backgroundColor": ["rgba(245, 74, 85, 0.5)", "rgba(90, 173, 246, 0.5)",
+                                "rgba(245, 192, 50, 0.5)", "rgba(255, 159, 64, 0.5)", "rgba(75, 192, 192, 0.5)"],
+            "borderWidth": 1
+        }]
+    }
+
+    return {"pieChartData": pie_chart_data, "barChartData": bar_chart_data}
+
+
 @router.get("/getarticles")
 def main():
     '''
@@ -150,9 +203,8 @@ def main():
 #     '''
 #     return "Articles VIEW"
 
-
 @router.post("/classifydata")
-async def post_classifydata(article_data:str,request: Request,mongo_client:MongoClient = Depends(get_mongo_client)):
+async def post_classifydata(article_data:str,mongo_client:MongoClient = Depends(get_mongo_client)):
     '''
     returns classifydata
     '''
@@ -174,26 +226,91 @@ async def post_classifydata(article_data:str,request: Request,mongo_client:Mongo
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"message: {str(e)}")
 
-    # user_agent = request.headers.get("user-agent")
-    # # Access request body
-    # data = await request.json()
-    # # Access request query parameters
-    # query_params = dict(request.query_params)
-    # # Process the request and return a response
-    # response_data = {"user_agent": user_agent, "data": data, "query_params": query_params}
-    # return response_data
+# @router.post("/classifydata")
+# async def post_classifydata(article_data:str,request: Request,mongo_client:MongoClient = Depends(get_mongo_client)):
+#     '''
+#     returns classifydata
+#     '''
+#     model=GroupByClassModel()
+#     db = mongo_client["gbc_db"]
+#     model_collection = db["model"]
+#     first_item = model_collection.find_one()
+
+#     if first_item:
+#         model.set_model(first_item)
+
+#     try:
+#         if first_item:
+#             model.set_model(first_item)
+#             result=model.classify(article_data)
+#             return result
+#         else:
+#             return {"message":"no trained model found"}
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=f"message: {str(e)}")
+
+#     # user_agent = request.headers.get("user-agent")
+#     # # Access request body
+#     # data = await request.json()
+#     # # Access request query parameters
+#     # query_params = dict(request.query_params)
+#     # # Process the request and return a response
+#     # response_data = {"user_agent": user_agent, "data": data, "query_params": query_params}
+#     # return response_data
+
+@router.post("/healthtrain2")
+async def healthtrain2(modelname:str="model",increment_learning:bool=True,mongo_client: MongoClient = Depends(get_mongo_client)):
+    '''
+    train model
+    '''
+    db = mongo_client["gbc_db"]
+    model_collection = db["model"]
+    trainig_data_collection = db["training_data"]
+    training_data = trainig_data_collection.find()
+    request_data: list[Article]=[]
+    for article in training_data:
+        request_data.append(Article(**article))
+    class_names=None#['Plane','Car','Bird','Cat','Deer','Dog','Frog','Horse','Ship','Truck']
+    # class_names=['Global Health Security Initiatives',
+    # 'Infectious Disease Response and Prevention',
+    # 'Public Health Emergency Preparedness',
+    # 'Environmental Health and Protection',
+    # 'Pandemic Management and Response']
+    model=GroupByClassModel(name=modelname,categories=class_names,increment_learning=increment_learning)
+
+    first_item = model_collection.find_one()
+
+    if first_item:
+        model.set_model(first_item)
+
+    model.train(request_data)
+    # model.get_categories(True)
+    trained_model ={
+        "name":model.name,
+        "number_of_documents":model.number_of_documents,
+        "trained":model.model_trained,
+        "categories":model.model_categories,
+        "class_vectors":model.model_class_vectors,
+        "combined_classterm_weights":model.model_combined_classterm_weights,
+        "unique_class_averages":model.model_unique_class_averages
+    }
+    try:
+        result = model_collection.replace_one({"name": model.name},trained_model, upsert=True)
+        return trained_model
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"message: {str(e)}")
 
 @router.post("/healthtrain")
 async def healthtrain(request_data: list[Article],modelname:str="model",increment_learning:bool=True,mongo_client: MongoClient = Depends(get_mongo_client)):
     '''
     train model
     '''
-    # class_names=None#['Plane','Car','Bird','Cat','Deer','Dog','Frog','Horse','Ship','Truck']
-    class_names=['Global Health Security Initiatives',
-    'Infectious Disease Response and Prevention',
-    'Public Health Emergency Preparedness',
-    'Environmental Health and Protection',
-    'Pandemic Management and Response']
+    class_names=None#['Plane','Car','Bird','Cat','Deer','Dog','Frog','Horse','Ship','Truck']
+    # class_names=['Global Health Security Initiatives',
+    # 'Infectious Disease Response and Prevention',
+    # 'Public Health Emergency Preparedness',
+    # 'Environmental Health and Protection',
+    # 'Pandemic Management and Response']
     model=GroupByClassModel(name=modelname,categories=class_names,increment_learning=increment_learning)
     db = mongo_client["gbc_db"]
     model_collection = db["model"]
