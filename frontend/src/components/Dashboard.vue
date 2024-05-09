@@ -9,10 +9,12 @@
               href="http://3.87.231.155:8082/classificationmodel"
               target="_blank"
               class="text-white"
-              ><u><b>View Classification Model</b></u></a
             >
+              <u><b>View Classification Model</b></u>
+            </a>
           </mdb-view>
           <mdb-card-body v-bind:key="ClassifiercomponentKey">
+            <!-- Input section -->
             <div class="input-group md-form form-sm form-2 pl-0">
               <input
                 class="form-control my-0 py-1 lime-border"
@@ -27,8 +29,9 @@
                   v-on:click.prevent="classify"
                   class="input-group-text lime lighten-2"
                   id="basic-text1"
-                  ><i class="fas fa-dot-circle text-grey" aria-hidden="true"></i
-                ></span>
+                >
+                  <i class="fas fa-dot-circle text-grey" aria-hidden="true"></i>
+                </span>
               </div>
               <div class="d-flex justify-content-center" v-if="loading">
                 <div
@@ -40,11 +43,12 @@
                 </div>
               </div>
             </div>
-            <!--v-if="submitted"-->
-            <mdb-card class="mb-4">
-              <mdb-card-header class="text-center">
-                Top 3 Categories
-              </mdb-card-header>
+
+            <!-- Top 3 Categories -->
+            <mdb-card class="mb-4" v-if="submitted">
+              <mdb-card-header class="text-center"
+                >Top 3 Categories</mdb-card-header
+              >
               <mdb-card-body>
                 <div style="display: block">
                   <mdb-pie-chart
@@ -56,11 +60,11 @@
                 </div>
               </mdb-card-body>
             </mdb-card>
-            <!--<mdb-row class="mt-5">-->
-            <!--<mdb-col md="9" class="mb-4">-->
+
+            <!-- All Categories and Weightings -->
             <mdb-card class="mb-4" v-if="submitted">
-              <mdb-card-header class="text-center">
-                All cateogries and Weightings</mdb-card-header
+              <mdb-card-header class="text-center"
+                >All categories and Weightings</mdb-card-header
               >
               <mdb-card-body>
                 <div style="display: block">
@@ -73,9 +77,13 @@
                 </div>
               </mdb-card-body>
             </mdb-card>
-            <!--</mdb-col>-->
-            <!--</mdb-row>-->
-            <mdb-card class="card-body" style=" margin-top: 1rem;">
+
+            <!-- Document Content -->
+            <mdb-card
+              class="card-body"
+              style=" margin-top: 1rem;"
+              v-if="submitted"
+            >
               <mdb-card-title>Document Content</mdb-card-title>
               <mdb-card-text>{{ article.content }}</mdb-card-text>
               <div class="flex-row">
@@ -86,180 +94,50 @@
         </mdb-card>
       </mdb-col>
     </mdb-row>
-    <!--eslint-disable-next-line-->
-    <!--</br>-->
-    <!--<mdb-row>-->
-    <!--  <mdb-col md="12">-->
-    <!--    <mdb-card cascade narrow class="mt-5">-->
-    <!--      <mdb-card-body>-->
-    <!--Stress-->
-    <!--      </mdb-card-body>-->
-    <!--    </mdb-card>-->
-    <!--  </mdb-col>-->
-    <!--</mdb-row>-->
-    <!--<div class="card">-->
-    <!--   <h3 class="card-header text-center font-weight-bold text-uppercase py-4">Editable table</h3>-->
-    <!--   <div class="card-body">-->
-    <!--     <div id="table" class="table-editable">-->
-    <!--       <span class="table-add float-right mb-3 mr-2"><a href="#!" class="text-success"><i-->
-    <!--             class="fas fa-plus fa-2x" aria-hidden="true"></i></a></span>-->
-    <!--       <table class="table table-bordered table-responsive-md table-striped text-center">-->
-    <!--         <thead>-->
-    <!--           <tr>-->
-    <!--             <th class="text-center">Category</th>-->
-    <!--             <th class="text-center">Key Word</th>-->
-    <!--             <th class="text-center">Sort</th>-->
-    <!--             <th class="text-center">Remove</th>-->
-    <!--           </tr>-->
-    <!--         </thead>-->
-    <!--         <tbody>-->
-    <!--           <tr>-->
-    <!--             <td class="pt-3-half" contenteditable="true">Aurelia Vega</td>-->
-    <!--             <td class="pt-3-half" contenteditable="true">30</td>-->
-    <!--             <td class="pt-3-half">-->
-    <!--               <span class="table-up"><a href="#!" class="indigo-text"><i class="fas fa-long-arrow-alt-up"-->
-    <!--                     aria-hidden="true"></i></a></span>-->
-    <!--               <span class="table-down"><a href="#!" class="indigo-text"><i class="fas fa-long-arrow-alt-down"-->
-    <!--                     aria-hidden="true"></i></a></span>-->
-    <!--             </td>-->
-    <!--             <td>-->
-    <!--               <span class="table-remove"><button type="button"-->
-    <!--                   class="btn btn-danger btn-rounded btn-sm my-0">Remove</button></span>-->
-    <!--             </td>-->
-    <!--           </tr>-->
-    <!-- This is our clonable table line -->
-    <!--           <tr>-->
-    <!--             <td class="pt-3-half" contenteditable="true">Guerra Cortez</td>-->
-    <!--             <td class="pt-3-half" contenteditable="true">45</td>-->
-    <!--             <td class="pt-3-half">-->
-    <!--               <span class="table-up"><a href="#!" class="indigo-text"><i class="fas fa-long-arrow-alt-up"-->
-    <!--                     aria-hidden="true"></i></a></span>-->
-    <!--               <span class="table-down"><a href="#!" class="indigo-text"><i class="fas fa-long-arrow-alt-down"-->
-    <!--                     aria-hidden="true"></i></a></span>-->
-    <!--             </td>-->
-    <!--             <td>-->
-    <!--               <span class="table-remove"><button type="button"-->
-    <!--                   class="btn btn-danger btn-rounded btn-sm my-0">Remove</button></span>-->
-    <!--             </td>-->
-    <!--           </tr>-->
-    <!--         </tbody>-->
-    <!--       </table>-->
-    <!--     </div>-->
-    <!--   </div>-->
-    <!-- </div>-->
   </section>
 </template>
-<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>-->
 
 <script>
 import {
   mdbRow,
   mdbCol,
-  mdbBtn,
   mdbCard,
   mdbView,
   mdbCardBody,
   mdbCardHeader,
   mdbCardText,
   mdbCardTitle,
-  mdbIcon,
-  mdbTbl,
-  mdbBarChart,
   mdbPieChart,
-  mdbLineChart,
-  mdbRadarChart,
-  mdbDoughnutChart,
-  mdbListGroup,
-  mdbListGroupItem,
-  mdbBadge,
-  mdbModal,
-  mdbModalHeader,
-  mdbModalTitle,
-  mdbModalBody,
-  mdbModalFooter
+  mdbBarChart
 } from "mdbvue";
-import { _ } from "vue-underscore";
+
 export default {
   name: "Dashboard",
   components: {
     mdbRow,
     mdbCol,
-    mdbBtn,
     mdbCard,
     mdbView,
     mdbCardBody,
     mdbCardHeader,
     mdbCardText,
     mdbCardTitle,
-    mdbIcon,
-    mdbTbl,
-    mdbBarChart,
     mdbPieChart,
-    mdbLineChart,
-    mdbRadarChart,
-    mdbDoughnutChart,
-    mdbListGroup,
-    mdbListGroupItem,
-    mdbBadge,
-    mdbModal,
-    mdbModalHeader,
-    mdbModalTitle,
-    mdbModalBody,
-    mdbModalFooter
+    mdbBarChart
   },
   data() {
     return {
-      /* eslint-disable */
-      // api: 'http://gbcsystem-ice-wolf.c9users.io:8082/',
       api: "http://127.0.0.1:8084/",
-      loading: 0,
-      categorykeys: [],
+      loading: false,
       ClassifiercomponentKey: 0,
-      loading: 0,
       article: {
         url: "",
-        title: "",
         content: "",
         asource: "#",
         author: ""
       },
       submitted: false,
-      showFrameModalTop: false,
-      showFrameModalBottom: false,
-      showSideModalTopRight: false,
-      showSideModalTopLeft: false,
-      showSideModalBottomRight: false,
-      showSideModalBottomLeft: false,
-      showCentralModalSmall: false,
-      showCentralModalMedium: false,
-      showCentralModalLarge: false,
-      showCentralModalFluid: false,
-      showFluidModalRight: false,
-      showFluidModalLeft: false,
-      showFluidModalTop: false,
-      showFluidModalBottom: false,
-      barChartData: {
-        labels: [],
-        datasets: [
-          {
-            label: "Weightings Of All Categories",
-            data: [12, 39, 3, 50, 2, 32, 84, 64],
-            backgroundColor: "rgba(245, 74, 85, 0.5)",
-            borderWidth: 1
-          }
-          // , {
-          //   label: '#2',
-          //   data: [56, 24, 5, 16, 45, 24, 8, 64],
-          //   backgroundColor: 'rgba(90, 173, 246, 0.5)',
-          //   borderWidth: 1
-          // }, {
-          //   label: '#3',
-          //   data: [12, 25, 54, 3, 15, 44, 3, 40],
-          //   backgroundColor: 'rgba(245, 192, 50, 0.5)',
-          //   borderWidth: 1
-          // }
-        ]
-      },
+      barChartData: {},
       barChartOptions: {
         responsive: true,
         maintainAspectRatio: false,
@@ -286,152 +164,29 @@ export default {
           ]
         }
       },
-      pieChartData: {
-        labels: [],
-        datasets: [
-          {
-            data: [],
-            backgroundColor: [
-              "#F7464A",
-              "#46BFBD",
-              "#FDB45C",
-              "#949FB1",
-              "#4D5360",
-              "#ac64ad"
-            ],
-            hoverBackgroundColor: [
-              "#FF5A5E",
-              "#5AD3D1",
-              "#FFC870",
-              "#A8B3C5",
-              "#616774",
-              "#da92db"
-            ]
-          }
-        ]
-      },
-      pieChartOptions: {
-        responsive: true,
-        maintainAspectRatio: false
-      },
-      allCategories: [
-        "Art and Culture",
-        "Conflicts and War",
-        "Crime",
-        "Disaster and Accidents",
-        "Economy",
-        "Education",
-        "Environment",
-        "Health",
-        "Human Interest",
-        "Labor",
-        "Lifestyle and Leisure",
-        "Politics",
-        "Religion and Belief",
-        "Science and Technology",
-        "Society",
-        "Sport",
-        "Weather"
-      ],
-      allBackgroundColor: [
-        "#00FFFF",
-        "#7FFFD4",
-        "#000000",
-        "#0000FF",
-        "#FFFF00",
-        "#A52A2A",
-        "#DEB887",
-        "#5F9EA0",
-        "#7FFF00",
-        "#D2691E",
-        "#DC143C",
-        "#FF8C00",
-        "#9932CC",
-        "#8FBC8F",
-        "#FF1493",
-        "#FF00FF",
-        "#8A2BE2"
-      ]
+      pieChartData: {},
+      allCategories: [],
+      allBackgroundColor: []
     };
   },
-  created() {
-    // console.log("Test");
-    this.getcategorykeys();
-
-    // this.getData(page);
-  },
-  /* eslint-disable */
   methods: {
-    classify: function() {
-      this.loading = 1;
+    classify() {
+      this.loading = true;
       this.$http
-        .post(this.api + "classifydata", {
-          url: this.article.url,
-          // headers: {
-          //   accepts: "application/vnd.api+json"
-          // },
-          ContentType: "application/json"
-        })
-        .then(function(data) {
-          if (data.body.message) console.log(data.body.message);
-          else console.log(data);
-
-          this.article.url = "";
-          var temp = _.values(data.body.categoriestop3);
-          var i,
-            total = 0;
-          this.pieChartData.labels = [];
-          this.pieChartData.datasets[0].data = [];
-          this.pieChartData.datasets[0].backgroundColor = [];
-          this.pieChartData.datasets[0].hoverBackgroundColor = [];
-          for (i = 0; i < temp.length; i++) {
-            console.log(temp[i][0]);
-            this.pieChartData.labels.push(temp[i][0]);
-            this.pieChartData.datasets[0].backgroundColor.push(
-              this.allBackgroundColor[this.allCategories.indexOf(temp[i][0])]
-            );
-            this.pieChartData.datasets[0].hoverBackgroundColor.push(
-              this.allBackgroundColor[this.allCategories.indexOf(temp[i][0])]
-            );
-            total += temp[i][1];
-            this.pieChartData.datasets[0].data.push(temp[i][1]);
-          }
-          for (i = 0; i < temp.length; i++) {
-            this.pieChartData.datasets[0].data[i] = (temp[i][1] / total) * 100;
-          }
-          // window.pieChartData.update();
-          // this.$refs.$forceUpdate()
-          // console.log(this.pieChartData.datasets[0].data)
-          // this.pieChartData.labels =temp
-          this.article.content = data.body.document;
-          this.article.asource = data.body.asource;
-
-          this.barChartData.labels = _.keys(data.body.categories);
-          console.log(this.barChartData.datasets[0]["data"]);
-          this.barChartData.datasets[0]["data"] = _.values(
-            data.body.categories
-          );
+        .get(`${this.api}dummydata`)
+        .then(response => {
+          const data = response.data;
+          this.pieChartData = data.pieChartData;
+          this.barChartData = data.barChartData;
           this.submitted = true;
-          this.ClassifiercomponentKey += 1;
-          this.loading = 0;
+          this.ClassifiercomponentKey++;
+          this.loading = false;
+        })
+        .catch(error => {
+          console.error("Error fetching dummy data:", error);
+          this.loading = false;
         });
-    },
-    getcategorykeys: function() {
-      this.$http.get(this.api + "categorykeywords").then(function(data) {
-        console.log(data.body[0]);
-        this.categorykeys = data.body;
-      });
     }
-    //,
-    // getmodel: function()
-    // {
-    //   this.$http.get('http://gbcsystem-ice-wolf.c9users.io:8082/classificationmodel').then
-    //   (function(data){
-    //     console.log(data.body[0]);
-    //     this.categorykeys = data.body;
-
-    //   });
-    // }
   }
 };
 </script>

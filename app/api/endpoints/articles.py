@@ -109,6 +109,30 @@ def add_article(content: str,mongo_client:MongoClient = Depends(get_mongo_client
     inserted_article = article_collection.find_one({"_id": result.inserted_id})
     return inserted_article
 
+
+@router.get("/dummydata")
+def get_dummy_data():
+    pie_chart_data = {
+        "labels": ["Category 1", "Category 2", "Category 3", "Category 4", "Category 5"],
+        "datasets": [{
+            "data": [30, 20, 15, 10, 25],
+            "backgroundColor": ["#F7464A", "#46BFBD", "#FDB45C", "#949FB1", "#4D5360"],
+            "hoverBackgroundColor": ["#FF5A5E", "#5AD3D1", "#FFC870", "#A8B3C5", "#616774"]
+        }]
+    }
+
+    bar_chart_data = {
+        "labels": ["Category 1", "Category 2", "Category 3", "Category 4", "Category 5"],
+        "datasets": [{
+            "label": "Weightings Of All Categories",
+            "data": [25, 30, 15, 20, 10],
+            "backgroundColor": ["rgba(245, 74, 85, 0.5)", "rgba(90, 173, 246, 0.5)",
+                                "rgba(245, 192, 50, 0.5)", "rgba(255, 159, 64, 0.5)", "rgba(75, 192, 192, 0.5)"],
+            "borderWidth": 1
+        }]
+    }
+    return {"pieChartData": pie_chart_data, "barChartData": bar_chart_data}
+
 @router.get("/getarticles")
 def main():
     '''
@@ -119,12 +143,12 @@ def main():
 
 
 
-@router.get("/articles")
-def main():
-    '''
-    returns Articles
-    '''
-    return "Articles VIEW"
+# @router.get("/articles")
+# def main2():
+#     '''
+#     returns Articles
+#     '''
+#     return "Articles VIEW"
 
 
 @router.post("/classifydata")
@@ -164,7 +188,12 @@ async def healthtrain(request_data: list[Article],modelname:str="model",incremen
     '''
     train model
     '''
-    class_names=None#['Plane','Car','Bird','Cat','Deer','Dog','Frog','Horse','Ship','Truck']
+    # class_names=None#['Plane','Car','Bird','Cat','Deer','Dog','Frog','Horse','Ship','Truck']
+    class_names=['Global Health Security Initiatives',
+    'Infectious Disease Response and Prevention',
+    'Public Health Emergency Preparedness',
+    'Environmental Health and Protection',
+    'Pandemic Management and Response']
     model=GroupByClassModel(name=modelname,categories=class_names,increment_learning=increment_learning)
     db = mongo_client["gbc_db"]
     model_collection = db["model"]
