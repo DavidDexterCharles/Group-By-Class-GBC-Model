@@ -14,12 +14,11 @@
               <input
                 class="form-control my-0 py-1 lime-border"
                 v-model="searchQuery"
-                v-on:keyup.enter="classify"
+                @keyup.enter="classify"
                 type="text"
-                v-bind:placeholder="'Search by ' + searchoption"
+                :placeholder="'Search by ' + searchoption"
                 aria-label="Search"
               />
-
               <select
                 v-model="searchoption"
                 class="btn btn-danger btn-sm dropdown-toggle"
@@ -27,13 +26,12 @@
               >
                 <option
                   v-for="option in searchoptions"
-                  v-bind:key="option"
-                  v-bind:value="option"
+                  :key="option"
+                  :value="option"
                   >{{ option }}</option
                 >
               </select>
             </div>
-            <!--<span>Search Criteria: {{searchoption}}</span>-->
             <div>
               <b
                 >Total:
@@ -44,7 +42,7 @@
             </div>
             <div class="input-group-append">
               <button
-                v-on:click="addPage"
+                @click="addPage"
                 class="btn btn-md btn-secondary m-0 px-3 right"
                 type="button"
                 id="MaterialButton-addon2"
@@ -62,43 +60,42 @@
               </div>
             </div>
           </mdb-card-body>
-          <!--</mdb-card>-->
-          <!--<mdb-card cascade narrow class="mt-5">-->
-          <mdb-card-body v-bind:key="ArticlescomponentKey">
+          <mdb-card-body :key="ArticlescomponentKey">
             <div class="input-group md-form form-sm form-2 pl-0">
-              <!--<div class="panel-body" style="max-height: 400px;overflow-y: scroll;">-->
-              <table v-if="resources.length" class="table">
+              <table v-if="articles.length" class="table">
                 <thead>
                   <tr>
-                    <th>Articles</th>
+                    <th>Title</th>
                     <th>Content</th>
                     <th>Categories</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="item in filteredResources" v-bind:key="item.title">
+                  <tr
+                    v-for="article in filteredResources"
+                    :key="article.content"
+                  >
                     <td>
-                      <a :href="item.uri" target="_blank" style="color:blue;">{{
-                        item.title
-                      }}</a>
+                      <a
+                        :href="article.source"
+                        target="_blank"
+                        style="color:blue;"
+                        >{{ article.title }}</a
+                      >
                     </td>
-                    <td>
-                      {{ item.content }}
-                      <!--{{item.title}}-->
-                    </td>
+                    <td>{{ article.content }}</td>
                     <td>
                       <div style="width:200px;">
-                        <mdb-pie-chart
-                          :data="item.pieChartData"
-                          :height="300"
-                          :width="300"
-                        />
+                        <!-- Render categories here -->
+                        <span v-if="article.categories.length > 0">
+                          {{ article.categories.join(", ") }}
+                        </span>
+                        <span v-else>No categories</span>
                       </div>
                     </td>
                   </tr>
                 </tbody>
               </table>
-              <!--</div>-->
             </div>
           </mdb-card-body>
         </mdb-card>
@@ -108,293 +105,74 @@
 </template>
 
 <script>
-// https://stackoverflow.com/questions/52558770/vuejs-search-filter
 import {
   mdbDropdown,
-  mdbDropdownItem,
-  mdbDropdownMenu,
-  mdbDropdownToggle,
-  mdbCardHeader,
-  mdbPieChart,
-  mdbContainer,
+  mdbCard,
+  mdbView,
   mdbRow,
   mdbCol,
-  mdbCard,
-  mdbCardBody,
-  mdbView,
-  mdbMask,
-  mdbCardTitle,
-  mdbCardText,
-  mdbCardFooter,
-  mdbIcon,
-  mdbBtn,
-  mdbPagination,
-  mdbPageNav,
-  mdbPageItem
+  mdbCardBody
 } from "mdbvue";
 import { _ } from "vue-underscore";
-// var api = "http://gbcsystem-ice-wolf.c9users.io:8082/";
-// var api = "http://3.85.235.141:8082/";
+
 export default {
   name: "Articles",
-  components: {
-    mdbDropdown,
-    mdbDropdownItem,
-    mdbDropdownMenu,
-    mdbDropdownToggle,
-    mdbCardHeader,
-    mdbPieChart,
-    mdbContainer,
-    mdbRow,
-    mdbCol,
-    mdbCard,
-    mdbCardBody,
-    mdbView,
-    mdbMask,
-    mdbCardTitle,
-    mdbCardText,
-    mdbCardFooter,
-    mdbIcon,
-    mdbBtn,
-    mdbPagination,
-    mdbPageNav,
-    mdbPageItem
-  },
+  components: { mdbDropdown, mdbCard, mdbView, mdbRow, mdbCol, mdbCardBody },
   data() {
     return {
       api: "http://127.0.0.1:8084/",
       searchoption: "Article Content",
       searchoptions: ["Article Content", "Article Category"],
       ArticlescomponentKey: 0,
-      loading: 0,
+      loading: false,
       articles: [],
       numarticles: 0,
       numpages: "",
       maxpages: 1,
-      submitted: false,
-      showFrameModalTop: false,
-      showFrameModalBottom: false,
-      showSideModalTopRight: false,
-      showSideModalTopLeft: false,
-      showSideModalBottomRight: false,
-      showSideModalBottomLeft: false,
-      showCentralModalSmall: false,
-      showCentralModalMedium: false,
-      showCentralModalLarge: false,
-      showCentralModalFluid: false,
-      showFluidModalRight: false,
-      showFluidModalLeft: false,
-      showFluidModalTop: false,
-      showFluidModalBottom: false,
-      pieChartData: {
-        labels: [
-          "aaaaaaaaaaaaaaaaaaaaa",
-          "bbbbbbbbbbbbbbbbbb",
-          "cccccccccccccccccccccc"
-        ],
-        datasets: [
-          {
-            data: [12, 44, 20],
-            backgroundColor: ["#F7464A", "#46BFBD", "#FDB45C"],
-            hoverBackgroundColor: ["#FF5A5E", "#5AD3D1", "#FFC870"]
-          }
-        ]
-      },
-      pieChartOptions: {
-        responsive: true,
-        maintainAspectRatio: false
-      },
-      /* eslint-disable */
       searchQuery: "",
-      searchQuery2: "",
-      allCategories: [
-        "Art and Culture",
-        "Conflicts and War",
-        "Crime",
-        "Disaster and Accidents",
-        "Economy",
-        "Education",
-        "Environment",
-        "Health",
-        "Human Interest",
-        "Labor",
-        "Lifestyle and Leisure",
-        "Politics",
-        "Religion and Belief",
-        "Science and Technology",
-        "Society",
-        "Sport",
-        "Weather"
-      ],
-      allBackgroundColor: [
-        "#00FFFF",
-        "#7FFFD4",
-        "#000000",
-        "#0000FF",
-        "#FFFF00",
-        "#A52A2A",
-        "#DEB887",
-        "#5F9EA0",
-        "#7FFF00",
-        "#D2691E",
-        "#DC143C",
-        "#FF8C00",
-        "#9932CC",
-        "#8FBC8F",
-        "#FF1493",
-        "#FF00FF",
-        "#8A2BE2"
-      ],
-      resources: [
-        // {
-        //   title:"",
-        //   uri:"",
-        //   content:"",
-        //   pieChartData: {
-        //     labels:[],
-        //     datasets: [
-        //       {
-        //         data: [],
-        //         backgroundColor: [],
-        //         hoverBackgroundColor: []
-        //       }
-        //     ]
-        //   },
-        //   pieChartOptions: {
-        //     responsive: true,
-        //     maintainAspectRatio: false
-        //   }
-        // }
-      ]
+      resources: []
     };
   },
-  /* eslint-disable */
   computed: {
     filteredResources() {
       if (this.searchQuery) {
-        // console.log("Test1")
-        return this.resources.filter(item => {
-          var result;
-          if (this.searchoption == "Article Content")
-            result = item.content
-              .toLowerCase()
-              .includes(this.searchQuery.toLowerCase());
-          else {
-            result = item.pieChartData.labels
-              .join()
-              .toLowerCase()
-              .includes(this.searchQuery.toLowerCase());
+        return this.articles.filter(article => {
+          const searchString = this.searchQuery.toLowerCase();
+          if (this.searchoption === "Article Content") {
+            return article.content.toLowerCase().includes(searchString);
+          } else {
+            // Search in categories
+            return article.categories.some(category =>
+              category.toLowerCase().includes(searchString)
+            );
           }
-          // console.log(this.resources.length);
-          return result;
         });
       } else {
-        // console.log(this.resources.length);
-        // this.numarticles = this.resources.length;
-        return this.resources;
+        return this.articles;
       }
     }
   },
   created() {
-    // console.log("Test");
     this.getData(1);
-
-    // this.getData(page);
   },
   methods: {
-    setsearchoption: function() {
-      console.log("Apples");
-      // this.searchoption = option;
-    },
-
-    getData: function(page) {
-      this.loading = 1;
-      this.$http.get(this.api + "article?page=" + page).then(function(data) {
-        // if(data.body.message)
-        //     console.log(data.body.message);
-        // else
-        //     console.log("TEST DATA");
-        // this.submitted = true;
-        this.numpages = data.body.total_pages;
-        this.articles.push(...data.body.data); //data.body.data;;
-        var i, k, cdata, categorylabel;
-        var title,
-          uri,
-          content,
-          categorylabels,
-          categoryvalues,
-          categorycolors,
-          catgorydata;
-        var tempresource;
-        this.resources = [];
-        for (i = 0; i < this.articles.length; i++) {
-          categorylabel = [];
-          categoryvalues = [];
-          categorycolors = [];
-          cdata = _.values(this.articles[i].articlecategories);
-          categorylabel.push(cdata[0][0]);
-          categorylabel.push(cdata[1][0]);
-          categorylabel.push(cdata[2][0]);
-          var ctot = cdata[0][1] + cdata[1][1] + cdata[2][1];
-          categoryvalues.push((cdata[0][1] / ctot) * 100);
-          categoryvalues.push((cdata[1][1] / ctot) * 100);
-          categoryvalues.push((cdata[2][1] / ctot) * 100);
-          for (k = 0; k < categorylabel.length; k++)
-            categorycolors.push(
-              this.allBackgroundColor[
-                this.allCategories.indexOf(categorylabel[k])
-              ]
-            );
-          // console.log(categorylabel)
-          // console.log(categoryvalues)
-          // console.log(categorycolors)
-          // console.log(title)
-          tempresource = {
-            title: this.articles[i].TITLE,
-            uri: this.articles[i].SOURCE,
-            content: this.articles[i].CONTENT,
-            pieChartData: {
-              labels: categorylabel,
-              datasets: [
-                {
-                  data: categoryvalues,
-                  backgroundColor: categorycolors,
-                  hoverBackgroundColor: []
-                }
-              ]
-            },
-            pieChartOptions: {
-              responsive: true,
-              maintainAspectRatio: false
-            }
-          };
-          // console.log(tempresource)
-          this.resources.push(tempresource);
-        }
-
-        var i;
-        for (i = 0; i < this.articles.length; i++)
-          console.log(this.articles[i].TITLE);
-
-        this.numarticles = this.articles.length;
-        // var page;
-        // for(page=2;page<=this.numpages;page++)
-
-        //     console.log("Test")
-        // // this.article.content = data.body.CONTENT;
-        // console.log(this.numpages)
-        this.loading = 0;
-        // return this.resources;
+    getData(page) {
+      this.loading = true;
+      this.$http.get(`${this.api}getarticles?page=${page}`).then(data => {
+        console.log(data.body);
+        this.articles = data.body;
+        this.loading = false;
       });
     },
-    addPage: function() {
-      var page = this.maxpages + 1;
+    addPage() {
+      const page = this.maxpages + 1;
       if (this.maxpages <= this.numpages) {
         this.getData(page);
         this.maxpages = page;
         this.ArticlescomponentKey += 1;
-        console.log(this.maxpages);
-      } else alert("No More Articles");
+      } else {
+        alert("No More Articles");
+      }
     }
   }
 };

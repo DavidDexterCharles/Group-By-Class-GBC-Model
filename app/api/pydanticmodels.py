@@ -14,3 +14,9 @@ class UserLogin(BaseModel):
 class Article(BaseModel):
     content:str
     categories:list[str]
+
+class Article2(BaseModel):
+    title: str
+    source: str
+    content: str
+    categories:list[str]

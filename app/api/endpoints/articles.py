@@ -3,11 +3,17 @@
 # pylint: disable=W0707:raise-missing-from
 # import json
 # import redis
-from bson import ObjectId
+import json
+import time
+from typing import List, Optional
 from pymongo import MongoClient
-from fastapi import APIRouter, Depends, HTTPException,Request
-from app.api.pydanticmodels import Article
+from bson import ObjectId
+from fastapi import APIRouter, Depends, HTTPException, Query,Request
+from fastapi.encoders import ENCODERS_BY_TYPE
+from app.api.pydanticmodels import Article, Article2
 from app.services.gbc import GroupByClassModel
+
+ENCODERS_BY_TYPE[ObjectId] = str
 
 router = APIRouter()
 
@@ -26,6 +32,91 @@ def get_mongo_client():
     client = MongoClient(MONGO_URI)
     yield client
     client.close()
+
+
+dummy_articles = [
+    {
+        "TITLE": "Article 1",
+        "SOURCE": "http://example.com/article1",
+        "CONTENT": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        "articlecategories": {
+            "category1": 20,
+            "category2": 30,
+            "category3": 50
+        }
+    },
+    {
+        "TITLE": "Article 2",
+        "SOURCE": "http://example.com/article2",
+        "CONTENT": "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "articlecategories": {
+            "category1": 10,
+            "category2": 40,
+            "category3": 50
+        }
+    },
+    # Add more dummy articles as needed
+]
+
+
+
+@router.get("/article")
+async def get_articles(page: Optional[int] = 1):
+    page_size = 10  # Change this according to your pagination needs
+    start_index = (page - 1) * page_size
+    end_index = start_index + page_size
+    paginated_articles = dummy_articles[start_index:end_index]
+    total_pages = -(-len(dummy_articles) // page_size)  # Ceiling division to calculate total pages
+
+    # Simulating delay of 0.5 seconds for demonstration
+    time.sleep(0.5)
+
+    return {
+        "total_pages": total_pages,
+        "data": paginated_articles
+    }
+
+@router.get("/getarticles", response_model=List[Article2])
+def get_articles2(page_number: int = Query(1, ge=1), page_size: int = Query(10, ge=1), mongo_client: MongoClient = Depends(get_mongo_client)):
+    '''
+    Get all articles with pagination
+    '''
+    db = mongo_client["gbc_db"]
+    article_collection = db["article"]
+    skip = (page_number - 1) * page_size
+    result = article_collection.find().skip(skip).limit(page_size)
+    return list(result)
+
+@router.post("/addarticle")
+def add_article(content: str,mongo_client:MongoClient = Depends(get_mongo_client)):
+    '''
+    returns added article
+    '''
+    db = mongo_client["gbc_db"]
+    article_collection = db["article"]
+    # categories_collection = db["model_categories"]
+    # class_vectors_collection = db["model_class_vectors"]
+    # combined_classterm_weights_collection = db["model_combined_classterm_weights"]
+    # unique_class_averages_collection = db["model_unique_class_averages"]
+    # first_item = article_collection.find_one()
+    new_article = Article2(
+        title=f"{' '.join(content.split()[:8])}...",
+        source="",
+        content=content,
+        categories=[]
+    )
+    result = article_collection.insert_one(dict(new_article))
+    inserted_article = article_collection.find_one({"_id": result.inserted_id})
+    return inserted_article
+
+@router.get("/getarticles")
+def main():
+    '''
+    returns all Articles
+    '''
+    return "Articles VIEW"
+
+
 
 
 @router.get("/articles")
