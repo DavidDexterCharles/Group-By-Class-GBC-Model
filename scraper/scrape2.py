@@ -2,7 +2,7 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 
 url = "https://archive.cdc.gov/#/results?q=%20health%20emergencies&start=10&rows=10"
-# https://webformatter.com/html
+
 # Launch a headless browser
 options = webdriver.ChromeOptions()
 options.add_argument('--headless')  # To run Chrome in headless mode
@@ -16,8 +16,7 @@ driver.implicitly_wait(10)  # Adjust the wait time as needed
 
 # Now, you can parse the HTML content
 soup = BeautifulSoup(driver.page_source, 'html.parser')
-# article_links = soup.find_all('a', class_='col-sm-9')
-article_links = soup.find_all(class_='text-gray-500 text-sm')
+article_links = soup.find_all('a', class_='col-sm-9')
 
 # Process the article links
 for link in article_links:
