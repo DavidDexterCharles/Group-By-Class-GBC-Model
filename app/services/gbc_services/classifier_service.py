@@ -74,7 +74,7 @@ class ClassifierService:
 
                 dot_product = sum(query_vector.get(key, 0) * related_vector.get(key, 0) for key in set(query_vector) & set(related_vector))
                 related_terms[category]=related_vector
-                related_vectors[category]=dot_product
+                related_vectors[category]=round(dot_product,3)
 
         print("\n\n")
         print(f"query_vector {query_vector}")

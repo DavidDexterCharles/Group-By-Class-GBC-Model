@@ -14,11 +14,19 @@
               <input
                 class="form-control my-0 py-1 lime-border"
                 v-model="searchQuery"
-                @keyup.enter="classify"
+                @input="searchData"
                 type="text"
                 :placeholder="'Search by ' + searchoption"
                 aria-label="Search"
               />
+              <!-- <input
+                class="form-control my-0 py-1 lime-border"
+                v-model="searchQuery"
+                @keyup.enter="searchData"
+                type="text"
+                :placeholder="'Search by ' + searchoption"
+                aria-label="Search"
+              /> -->
               <select
                 v-model="searchoption"
                 class="btn btn-danger btn-sm dropdown-toggle"
@@ -36,7 +44,8 @@
               <b
                 >Total:
                 <span style="color:red;">{{
-                  filteredResources.length
+                  // filteredResources.length
+                  5
                 }}</span></b
               >
             </div>
@@ -71,10 +80,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr
-                    v-for="article in filteredResources"
-                    :key="article.content"
-                  >
+                  <tr v-for="article in articles" :key="article._id">
                     <td>
                       <a
                         :href="article.source"
@@ -88,7 +94,8 @@
                       <div style="width:200px;">
                         <!-- Render categories here -->
                         <span v-if="article.categories.length > 0">
-                          {{ article.categories.join(", ") }}
+                          <!-- {{ article.categories.join(", ") }} -->
+                          {{ article.category_weights }}
                         </span>
                         <span v-else>No categories</span>
                       </div>
@@ -133,25 +140,27 @@ export default {
       resources: []
     };
   },
-  computed: {
-    filteredResources() {
-      if (this.searchQuery) {
-        return this.articles.filter(article => {
-          const searchString = this.searchQuery.toLowerCase();
-          if (this.searchoption === "Article Content") {
-            return article.content.toLowerCase().includes(searchString);
-          } else {
-            // Search in categories
-            return article.categories.some(category =>
-              category.toLowerCase().includes(searchString)
-            );
-          }
-        });
-      } else {
-        return this.articles;
-      }
-    }
-  },
+  // computed: {
+  //   filteredResources() {
+  //     if (this.searchQuery) {
+  //       return this.articles.filter(article => {
+  //         const searchString = this.searchQuery.toLowerCase();
+  //         if (this.searchoption === "Article Content") {
+  //           return article.content.toLowerCase().includes(searchString);
+  //           // const articles = await this.searchData(searchString);
+  //           // return articles;
+  //         } else {
+  //           // Search in categories
+  //           return article.categories.some(category =>
+  //             category.toLowerCase().includes(searchString)
+  //           );
+  //         }
+  //       });
+  //     } else {
+  //       return this.articles;
+  //     }
+  //   }
+  // },
   created() {
     this.getData(1);
   },
@@ -163,6 +172,21 @@ export default {
         this.articles = data.body;
         this.loading = false;
       });
+    },
+    async searchData() {
+      this.loading = true;
+      try {
+        const response = await this.$http.get(
+          `${this.api}getarticles_search?search_query=${this.searchQuery}`
+        );
+        this.articles = response.data.result;
+        this.loading = false;
+        console.log(this.articles);
+        return this.articles;
+      } catch (error) {
+        console.error("Error fetching articles:", error);
+        this.loading = false;
+      }
     },
     addPage() {
       const page = this.maxpages + 1;

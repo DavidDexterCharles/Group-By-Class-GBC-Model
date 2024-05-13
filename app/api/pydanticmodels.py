@@ -1,5 +1,6 @@
 # pylint: disable=C0115:missing-class-docstring,C0114:missing-module-docstring
 from pydantic import BaseModel
+from datetime import datetime
 
 class UserRegistration(BaseModel):
     firstname: str
@@ -20,3 +21,5 @@ class Article2(BaseModel):
     source: str
     content: str
     categories:list[str]
+    category_weights:dict
+    insert_date:datetime

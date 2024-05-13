@@ -3,6 +3,7 @@
 # pylint: disable=W0707:raise-missing-from
 # import json
 # import redis
+from datetime import datetime,timezone
 import json
 import time
 from typing import List, Optional
@@ -69,7 +70,7 @@ async def get_articles(page: Optional[int] = 1):
     total_pages = -(-len(dummy_articles) // page_size)  # Ceiling division to calculate total pages
 
     # Simulating delay of 0.5 seconds for demonstration
-    time.sleep(0.5)
+    # time.sleep(0.5)
 
     return {
         "total_pages": total_pages,
@@ -77,21 +78,39 @@ async def get_articles(page: Optional[int] = 1):
     }
 
 @router.get("/getarticles", response_model=List[Article2])
-def get_articles2(page_number: int = Query(1, ge=1), page_size: int = Query(10, ge=1), mongo_client: MongoClient = Depends(get_mongo_client)):
+def get_articles2(page_number: int = Query(1, ge=1), page_size: int = Query(100, ge=1), mongo_client: MongoClient = Depends(get_mongo_client)):
     '''
     Get all articles with pagination
     '''
     db = mongo_client["gbc_db"]
     article_collection = db["article"]
     skip = (page_number - 1) * page_size
-    result = article_collection.find().skip(skip).limit(page_size)
+    result = article_collection.find().sort("insert_date", -1).skip(skip).limit(page_size)
     return list(result)
+@router.get("/getarticles_search")
+async def gegetarticles_searcht_articles2(search_query: str, mongo_client: MongoClient = Depends(get_mongo_client)):
+    '''
+    getarticles_search
+    '''
+    max_category=""
+    result_list=[]
+    classification_result=await post_classifydata(search_query,mongo_client)
+    if classification_result:
+        max_category = max(classification_result, key=classification_result.get)
+        db = mongo_client["gbc_db"]
+        article_collection = db["article"]
+        result_cursor  = article_collection.find().sort(f"category_weights.{max_category}", -1)
+        # Convert cursor to list of dictionaries
+        result_list = [article for article in result_cursor]
+    return {"max_category":max_category,"result":result_list}
 
 @router.post("/addarticle")
-def add_article(content: str,categories:str="",mongo_client:MongoClient = Depends(get_mongo_client)):
+def add_article(content: str,categories:str="",labels_weights:dict=None,mongo_client:MongoClient = Depends(get_mongo_client)):
     '''
     returns added article
     '''
+    if labels_weights is None:
+        labels_weights = {}
     db = mongo_client["gbc_db"]
     article_train_collection = db["training_data"]
     article_collection = db["article"]
@@ -104,11 +123,14 @@ def add_article(content: str,categories:str="",mongo_client:MongoClient = Depend
         labels=categories.split(',')
     else:
         labels=[]
+    current_time = datetime.now(timezone.utc)  # Get the current time in UTC
     new_article = Article2(
         title=f"{' '.join(content.split()[:8])}...",
         source="",
         content=content,
-        categories=labels
+        categories=labels,
+        category_weights=labels_weights,
+        insert_date=current_time
     )
     if categories:
         article_train_collection.insert_one(dict(new_article))
@@ -146,6 +168,9 @@ async def get_classify_dashboard(article_content,mongo_client:MongoClient = Depe
     get_classify_dashboard
     '''
     classification_result=await post_classifydata(article_content,mongo_client)
+    categories=list(classification_result.keys())
+    if categories:
+        add_article(article_content,','.join(categories),classification_result,mongo_client)
     return get_classification_dashboard(classification_result)
 
 def get_classification_dashboard(classification_result):
