@@ -45,7 +45,14 @@
                 >Total:
                 <span style="color:red;">{{
                   // filteredResources.length
-                  5
+                  articles.length
+                }}</span></b
+              >
+              <span></span>
+              <b>
+                <span style="color:red;">{{
+                  // filteredResources.length
+                  max_category
                 }}</span></b
               >
             </div>
@@ -133,6 +140,7 @@ export default {
       ArticlescomponentKey: 0,
       loading: false,
       articles: [],
+      max_category: "",
       numarticles: 0,
       numpages: "",
       maxpages: 1,
@@ -180,6 +188,7 @@ export default {
           `${this.api}getarticles_search?search_query=${this.searchQuery}`
         );
         this.articles = response.data.result;
+        this.max_category = response.data.max_category;
         this.loading = false;
         console.log(this.articles);
         return this.articles;
