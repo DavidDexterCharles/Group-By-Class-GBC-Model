@@ -37,7 +37,7 @@ class ClassifierService:
         self.model_categories:List=model_categories
         self.ds:DocumentService=DocumentService()
         self.combined_classterm_weights=combined_classterm_weights
-    
+        self.related_terms={}
     def get_max_category(self,classification:dict):
         '''
         ## Return the category with the highest value:
@@ -66,7 +66,7 @@ class ClassifierService:
                 related_vector = {key: mcv[key] for key in matching_terms}
                 for key in matching_terms:
                     if self.combined_classterm_weights[key] != 0:
-                        related_vector[key] = mcv[key] / self.combined_classterm_weights[key]
+                        related_vector[key] = round(mcv[key] / self.combined_classterm_weights[key],3)
                     else:
                         # Handle division by zero gracefully, for example, by setting a default value
                         related_vector[key] = 0  # or any other appropriate action
@@ -76,8 +76,10 @@ class ClassifierService:
                 related_terms[category]=related_vector
                 related_vectors[category]=round(dot_product,3)
 
+        self.related_terms=related_terms
         print("\n\n")
         print(f"query_vector {query_vector}")
         print(f"related_terms {related_terms}")
         print(f"related_vectors {related_vectors}")
+        
         return related_vectors

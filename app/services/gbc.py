@@ -33,6 +33,7 @@ class GroupByClassModel:
         self.model_unique_class_averages:Dict={}
         self.model_combined_classterm_weights:Dict={}
         self.model_categories:List = categories
+        self.related_terms={}
         # self.unique_class_average=0
         if self.model_categories is None:
             self.allow_new_labels=True
@@ -127,7 +128,8 @@ class GroupByClassModel:
                     document["prediction_max"]=''
                     self.y_pred.append('')
         else:
-            result= cs.classify(data)            
+            result= cs.classify(data)
+            self.related_terms=cs.related_terms            
         
         return result
 

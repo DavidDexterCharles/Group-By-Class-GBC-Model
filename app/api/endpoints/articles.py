@@ -92,6 +92,7 @@ async def gegetarticles_searcht_articles2(search_query: str, mongo_client: Mongo
     '''
     getarticles_search
     '''
+    search_query=search_query.strip()
     max_category=""
     result_list=[]
     classification_result=await post_classifydata(search_query,mongo_client)
@@ -99,7 +100,8 @@ async def gegetarticles_searcht_articles2(search_query: str, mongo_client: Mongo
         max_category = max(classification_result, key=classification_result.get)
         db = mongo_client["gbc_db"]
         article_collection = db["article"]
-        result_cursor  = article_collection.find().sort(f"category_weights.{max_category}", -1)
+        query = {f"category_weights.{max_category}": {"$exists": True}} # Query condition to filter documents where max_category matches
+        result_cursor  = article_collection.find(query).sort(f"category_weights.{max_category}", -1)
         # Convert cursor to list of dictionaries
         result_list = [article for article in result_cursor]
     return {"max_category":max_category,"result":result_list}
@@ -246,10 +248,40 @@ async def post_classifydata(article_data:str,mongo_client:MongoClient = Depends(
             model.set_model(first_item)
             result=model.classify(article_data)
             return result
+            # return convert_to_percentages(result)
         else:
             return {"message":"no trained model found"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"message: {str(e)}")
+
+@router.post("/classifydata2")
+async def post_classifydata2(article_data:str,mongo_client:MongoClient = Depends(get_mongo_client)):
+    '''
+    returns classifydata
+    '''
+    model=GroupByClassModel()
+    db = mongo_client["gbc_db"]
+    model_collection = db["model"]
+    first_item = model_collection.find_one()
+
+    if first_item:
+        model.set_model(first_item)
+
+    try:
+        if first_item:
+            model.set_model(first_item)
+            result=model.classify(article_data)
+            return {"result":result,"related_terms":model.related_terms}
+            # return convert_to_percentages(result)
+        else:
+            return {"message":"no trained model found"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"message: {str(e)}")
+
+def convert_to_percentages(weights):
+    total_weight = sum(weights.values())
+    percentages = {category: round((weight / total_weight), 1) * 100 for category, weight in weights.items()}
+    return percentages
 
 # @router.post("/classifydata")
 # async def post_classifydata(article_data:str,request: Request,mongo_client:MongoClient = Depends(get_mongo_client)):
@@ -345,6 +377,49 @@ async def healthtrain(request_data: list[Article],modelname:str="model",incremen
     if first_item:
         model.set_model(first_item)
 
+    model.train(request_data)
+    # model.get_categories(True)
+    trained_model ={
+        "name":model.name,
+        "number_of_documents":model.number_of_documents,
+        "trained":model.model_trained,
+        "categories":model.model_categories,
+        "class_vectors":model.model_class_vectors,
+        "combined_classterm_weights":model.model_combined_classterm_weights,
+        "unique_class_averages":model.model_unique_class_averages
+    }
+    try:
+        result = model_collection.replace_one({"name": model.name},trained_model, upsert=True)
+        return trained_model
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"message: {str(e)}")
+
+@router.post("/healthtrain3")
+async def healthtrain3(content:str,labels:str,modelname:str="model",increment_learning:bool=True,mongo_client: MongoClient = Depends(get_mongo_client)):
+    '''
+    train model
+    '''
+    class_names=None#['Plane','Car','Bird','Cat','Deer','Dog','Frog','Horse','Ship','Truck']
+    # class_names=['Global Health Security Initiatives',
+    # 'Infectious Disease Response and Prevention',
+    # 'Public Health Emergency Preparedness',
+    # 'Environmental Health and Protection',
+    # 'Pandemic Management and Response']
+    model=GroupByClassModel(name=modelname,categories=class_names,increment_learning=increment_learning)
+    db = mongo_client["gbc_db"]
+    model_collection = db["model"]
+
+    first_item = model_collection.find_one()
+
+    if first_item:
+        model.set_model(first_item)
+    labels=labels.split(' ')
+    new_article = Article(
+        content=content,
+        categories=labels
+    )
+    request_data: list[Article]=[]
+    request_data.append(new_article)
     model.train(request_data)
     # model.get_categories(True)
     trained_model ={
