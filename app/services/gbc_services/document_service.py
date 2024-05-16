@@ -70,10 +70,10 @@ class DocumentService:
         converts provided doc to a term_vector
         '''
         
-        words = doc.lower().split(" ")
-        unique_words = set()      
-        for word in words: # Iterate over the words and add them to the set
-            unique_words.add(word)
+        # words = doc.lower().split(" ")
+        # unique_words = set()      
+        # for word in words: # Iterate over the words and add them to the set
+        #     unique_words.add(word)
         
         # tv = Counter(unique_words)
         # tv=Counter(self._pre_process(doc).split(" "))

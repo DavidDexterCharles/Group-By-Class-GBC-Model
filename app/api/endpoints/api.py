@@ -47,7 +47,8 @@ def api_evaluate(mongo_client: MongoClient = Depends(get_mongo_client)):
     page_number=1 #page1
     page_size=500 #500 articles per page
     skip = (page_number - 1) * page_size
-    result = article_collection.find().sort("insert_date", -1).skip(skip).limit(page_size)
+    # result = article_collection.find().sort("insert_date", -1).skip(skip).limit(page_size)
+    result = article_collection.find().sort("_id", -1).skip(skip).limit(page_size)
     result_list=list(result)
     mm= ModelMetrics()
     mm.api_svm(result_list)

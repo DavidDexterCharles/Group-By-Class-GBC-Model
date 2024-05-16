@@ -73,7 +73,7 @@ class ClassifierService:
                         related_vector[key] = 0  # or any other appropriate action
                     # related_vector[key]=mcv[key]/self.combined_classterm_weights[key] #Penalize the Related Class Vectors using combined_classterm_weights
                 
-                # related_vector = self.get_top_n_pairs(related_vector,60)
+                # related_vector = self.get_top_n_pairs(related_vector,80)
                 dot_product = sum(query_vector.get(key, 0) * related_vector.get(key, 0) for key in set(query_vector) & set(related_vector))
                 related_terms[category]=related_vector
                 related_vectors[category]=round(dot_product,3)

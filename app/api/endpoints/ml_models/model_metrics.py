@@ -349,9 +349,11 @@ class ModelMetrics:
         y_pred=gbc_model_1["y_pred"]
         y_test_lower = [label.lower() for label in y_test]
         y_test=y_test_lower
-        # f1 = f1_score(y_test, y_pred,average='weighted')
+        f1 = f1_score(y_test, y_pred,average='weighted')
         precision, recall, f1, _ = precision_recall_fscore_support(y_test, y_pred, average='weighted',zero_division=1)
         message=f"GBC F1 Score: {f1}, Precision:{precision},Recall:{recall}"
+        print(message)
+        message=f"GBC F1 Score: {f1}"
         print(message)
         # Calculate subset accuracy
         subset_accuracy = accuracy_score(y_test, y_pred)
