@@ -23,12 +23,13 @@ class GroupByClassModel:
     Implementation of  the Group By Class Machine Learning Algorithms
     Features include model training,text classification,incremental learning, key word extraction
     '''
-    def __init__(self,name="",categories:List[str]=None,increment_learning=True):
+    def __init__(self,name="",categories:List[str]=None,increment_learning=True,verbose=True):
         '''
         Instantiate GBC Model:
 
         *By default incremental learning is set to True.
         '''
+        self.verbose=verbose
         self.model_class_vectors:Dict={}
         self.model_unique_class_averages:Dict={}
         self.model_combined_classterm_weights:Dict={}
@@ -105,7 +106,7 @@ class GroupByClassModel:
         '''
         classify
         '''
-        cs = ClassifierService(self.model_class_vectors,self.model_categories,self.model_combined_classterm_weights)
+        cs = ClassifierService(self.model_class_vectors,self.model_categories,self.model_combined_classterm_weights,self.verbose)
         result={}
         
         if isinstance(data, list):
@@ -168,11 +169,12 @@ class GroupByClassModel:
                     self.model_combined_classterm_weights[term]+=term_weight
                 else:
                     self.model_combined_classterm_weights[term]=term_weight
-        print(f"model_class_vectors: {self.model_class_vectors}\n")
-        print(f"model_combined_classterm_weights: {self.model_combined_classterm_weights}\n")
-        print(f"model_categories: {self.model_categories}\n")
-        print(f"unique_class_averages:{self.model_unique_class_averages}\n")
-        print(f"number_of_documents: {self.number_of_documents}\n")
+        if self.verbose:
+            print(f"model_class_vectors: {self.model_class_vectors}\n")
+            print(f"model_combined_classterm_weights: {self.model_combined_classterm_weights}\n")
+            print(f"model_categories: {self.model_categories}\n")
+            print(f"unique_class_averages:{self.model_unique_class_averages}\n")
+            print(f"number_of_documents: {self.number_of_documents}\n")
 
     def _update_existing_model(self,ts:TrainerService):
         '''

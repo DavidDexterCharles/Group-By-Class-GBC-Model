@@ -32,7 +32,8 @@ class ClassifierService:
         highest result is the category that best represents the query vector, and hence
         also the new document.
     '''
-    def __init__(self,model_class_vectors,model_categories,combined_classterm_weights):
+    def __init__(self,model_class_vectors,model_categories,combined_classterm_weights,verbose):
+        self.verbose=verbose
         self.model_class_vectors=model_class_vectors
         self.model_categories:List=model_categories
         self.ds:DocumentService=DocumentService()
@@ -77,9 +78,10 @@ class ClassifierService:
                 related_vectors[category]=round(dot_product,3)
 
         self.related_terms=related_terms
-        print("\n\n")
-        print(f"query_vector {query_vector}")
-        print(f"related_terms {related_terms}")
-        print(f"related_vectors {related_vectors}")
+        if self.verbose:
+            print("\n\n")
+            print(f"query_vector {query_vector}")
+            print(f"related_terms {related_terms}")
+            print(f"related_vectors {related_vectors}")
         
         return related_vectors
