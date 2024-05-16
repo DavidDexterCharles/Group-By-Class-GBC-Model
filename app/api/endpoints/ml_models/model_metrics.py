@@ -17,6 +17,10 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.svm import SVC
 
 
+import nltk
+from nltk.corpus import stopwords
+
+
 from app.api.pydanticmodels import Article
 from app.services.gbc import GroupByClassModel
 # https://chat.openai.com/c/f1010516-2c2c-41be-9f50-fa9e3c8d4da8
@@ -41,15 +45,19 @@ def format_data(documents, labels):
 
 def format_data_string(documents, labels):
     formatted_data = []
-
+    # nltk.download('stopwords')
+    # stop_words = set(stopwords.words('english'))
     for i in range(len(documents)):
         # Concatenate each feature with its index/position
         # feature_strings = [f"{idx}:{val}" for idx, val in enumerate(documents[i])]
-        feature_strings = documents[i]#[f"{idx}:{round(val,2)}" for idx, val in enumerate(documents[i])]
+        feature_strings = documents[i].lower()#[f"{idx}:{round(val,2)}" for idx, val in enumerate(documents[i])]
+        # words = feature_strings.split()
+        # filtered_words = [word for word in words if word.lower() not in stop_words]# # Remove stop words
+        # feature_strings = ' '.join(filtered_words)# Join the filtered words back into a string
         instance = {
             # "content": " ".join(map(str, documents[i])),  # Convert feature array to space seperated string
             "content": feature_strings,  # Convert feature array to space seperated string
-            "categories": [labels[i].lower()]  # Convert target to corresponding category, asumes each doc has one label
+            "categories": [labels[i].lower().strip(" ")]  # Convert target to corresponding category, asumes each doc has one label
         }
         formatted_data.append(instance)
         # if i==20:
@@ -267,7 +275,7 @@ class ModelMetrics:
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
         # Vectorize the text data using TF-IDF
-        tfidf_vectorizer = TfidfVectorizer(max_features=4)  # You can adjust max_features as needed
+        tfidf_vectorizer = TfidfVectorizer(max_features=1000)  # You can adjust max_features as needed
         X_train_tfidf = tfidf_vectorizer.fit_transform(X_train)
         X_test_tfidf = tfidf_vectorizer.transform(X_test)
 
@@ -293,10 +301,11 @@ class ModelMetrics:
         y = [doc["categories"][0] for doc in data]
 
         # Split data into train and test sets
+        # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
         # Vectorize the text data using CountVectorizer
-        count_vectorizer = CountVectorizer(max_features=4)  # You can adjust max_features as needed
+        count_vectorizer = CountVectorizer(max_features=1000)  # You can adjust max_features as needed
         X_train_counts = count_vectorizer.fit_transform(X_train)
         X_test_counts = count_vectorizer.transform(X_test)
 
@@ -341,7 +350,7 @@ class ModelMetrics:
         y_test_lower = [label.lower() for label in y_test]
         y_test=y_test_lower
         # f1 = f1_score(y_test, y_pred,average='weighted')
-        precision, recall, f1, _ = precision_recall_fscore_support(y_test, y_pred, average='weighted', zero_division=1)
+        precision, recall, f1, _ = precision_recall_fscore_support(y_test, y_pred, average='weighted',zero_division=1)
         message=f"GBC F1 Score: {f1}, Precision:{precision},Recall:{recall}"
         print(message)
         # Calculate subset accuracy
@@ -355,5 +364,6 @@ class ModelMetrics:
         y_true=gbc_model_1["y_true"]
         print(confusion_matrix(y_test, y_pred, labels=gbc_model_1["categories"]))
         print(classification_report(y_test, y_pred, labels=gbc_model_1["categories"],zero_division=1))
+        print(model.get_categories())
 
         return gbc_model_1

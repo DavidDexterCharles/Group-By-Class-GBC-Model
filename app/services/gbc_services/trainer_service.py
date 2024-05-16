@@ -62,6 +62,7 @@ class TrainerService:
             all_categories.extend(document.categories)
             valid_categories=self._get_valid_categories(document.categories,self.categories)
             for category in valid_categories:
+                # category=category.strip(' ')
                 if category in self.class_vectors:
                     #dont use short hand below, it causes strange issues
                     #and wrong vector merging

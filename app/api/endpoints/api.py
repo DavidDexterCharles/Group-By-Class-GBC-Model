@@ -54,5 +54,6 @@ def api_evaluate(mongo_client: MongoClient = Depends(get_mongo_client)):
     mm.api_svm_tfidf(result_list)
     mm.api_naive_bayes(result_list)
     mm.api_gbc(result_list)
+    # mm.gbc_binary()
 
     return result_list

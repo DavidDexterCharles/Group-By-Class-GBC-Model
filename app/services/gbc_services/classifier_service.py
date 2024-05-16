@@ -4,7 +4,7 @@
 #pylint: disable=C0115:missing-class-docstring
 #pylint: disable=C0303:trailing-whitespace
 #pylint: disable=C0301:line-too-long
-
+from heapq import nlargest
 from typing import List
 from .document_service import DocumentService
 
@@ -72,7 +72,8 @@ class ClassifierService:
                         # Handle division by zero gracefully, for example, by setting a default value
                         related_vector[key] = 0  # or any other appropriate action
                     # related_vector[key]=mcv[key]/self.combined_classterm_weights[key] #Penalize the Related Class Vectors using combined_classterm_weights
-
+                
+                # related_vector = self.get_top_n_pairs(related_vector,60)
                 dot_product = sum(query_vector.get(key, 0) * related_vector.get(key, 0) for key in set(query_vector) & set(related_vector))
                 related_terms[category]=related_vector
                 related_vectors[category]=round(dot_product,3)
@@ -85,3 +86,16 @@ class ClassifierService:
             print(f"related_vectors {related_vectors}")
         
         return related_vectors
+    
+    def get_top_n_pairs(self,related_vector, n):
+        """
+        Extracts the top N key-value pairs from the given dictionary based on values.
+
+        Args:
+        related_vector (dict): The input dictionary.
+        n (int): Number of top key-value pairs to extract.
+
+        Returns:
+        dict: A new dictionary containing the top N key-value pairs.
+        """
+        return dict(nlargest(n, related_vector.items(), key=lambda item: item[1]))
