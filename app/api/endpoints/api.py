@@ -44,8 +44,8 @@ def api_evaluate(mongo_client: MongoClient = Depends(get_mongo_client)):
     '''
     db = mongo_client["gbc_db"]
     # article_collection = db["article"]
-    # article_collection = db["article_good_test"]
-    article_collection = db["article_backup_david"]
+    article_collection = db["article_good_test"]
+    # article_collection = db["article_backup_david"]
     page_number=1 #page1
     page_size=500 #500 articles per page
     skip = (page_number - 1) * page_size
@@ -53,12 +53,12 @@ def api_evaluate(mongo_client: MongoClient = Depends(get_mongo_client)):
     result = article_collection.find().sort("_id", -1).skip(skip).limit(page_size)
     result_list=list(result)
     mm= ModelMetrics()
-    # mm.api_svm(result_list)
-    # mm.api_svm_tfidf(result_list)
-    # mm.api_naive_bayes(result_list)
-    # mm.api_gbc(result_list)
-    mm.naive_bayes()
-    mm.gbc_binary()
-    mm.nb_vs_svm()
+    mm.api_svm(result_list)
+    mm.api_svm_tfidf(result_list)
+    mm.api_naive_bayes(result_list)
+    mm.api_gbc(result_list)
+    # mm.naive_bayes()
+    # mm.gbc_binary()
+    # mm.nb_vs_svm()
 
     return result_list

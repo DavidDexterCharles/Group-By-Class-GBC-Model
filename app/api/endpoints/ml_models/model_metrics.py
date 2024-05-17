@@ -45,15 +45,15 @@ def format_data(documents, labels):
 
 def format_data_string(documents, labels):
     formatted_data = []
-    nltk.download('stopwords')
-    stop_words = set(stopwords.words('english'))
+    # nltk.download('stopwords')
+    # stop_words = set(stopwords.words('english'))
     for i in range(len(documents)):
         # Concatenate each feature with its index/position
         # feature_strings = [f"{idx}:{val}" for idx, val in enumerate(documents[i])]
         feature_strings = documents[i].lower()#[f"{idx}:{round(val,2)}" for idx, val in enumerate(documents[i])]
-        words = feature_strings.split()
-        filtered_words = [word for word in words if word.lower() not in stop_words]# # Remove stop words
-        feature_strings = ' '.join(filtered_words)# Join the filtered words back into a string
+        # words = feature_strings.split()
+        # filtered_words = [word for word in words if word.lower() not in stop_words]# # Remove stop words
+        # feature_strings = ' '.join(filtered_words)# Join the filtered words back into a string
         instance = {
             # "content": " ".join(map(str, documents[i])),  # Convert feature array to space seperated string
             "content": feature_strings,  # Convert feature array to space seperated string
