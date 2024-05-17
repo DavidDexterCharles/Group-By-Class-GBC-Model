@@ -33,13 +33,14 @@ class ClassifierService:
         highest result is the category that best represents the query vector, and hence
         also the new document.
     '''
-    def __init__(self,model_class_vectors,model_categories,combined_classterm_weights,verbose):
+    def __init__(self,model_class_vectors,model_categories,combined_classterm_weights,verbose,number_of_features):
         self.verbose=verbose
         self.model_class_vectors=model_class_vectors
         self.model_categories:List=model_categories
         self.ds:DocumentService=DocumentService()
         self.combined_classterm_weights=combined_classterm_weights
         self.related_terms={}
+        self.number_of_features=number_of_features
     def get_max_category(self,classification:dict):
         '''
         ## Return the category with the highest value:
@@ -64,8 +65,11 @@ class ClassifierService:
         for category in self.model_categories:
             mcv=self.model_class_vectors[category]
             # mcv=self.balanced_sample(mcv,500)
-            # mcv=self.get_top_n_pairs(mcv,500)
-            mcv=self.get_top_n_pairs(mcv,int(len(query_vector)))
+            # mcv=self.get_top_n_pairs(mcv,1000)
+            if len(query_vector)<len(mcv):
+                self.number_of_features=int(len(query_vector))+int(len(mcv)/len(query_vector))
+            mcv=self.get_top_n_pairs(mcv,self.number_of_features)
+            # mcv=self.get_top_n_pairs(mcv,int(len(query_vector))+self.number_of_features)
             matching_terms=set(mcv).intersection(set(query_vector))
             if matching_terms:
                 related_vector = {key: mcv[key] for key in matching_terms}

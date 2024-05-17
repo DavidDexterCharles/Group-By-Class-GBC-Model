@@ -23,13 +23,14 @@ class GroupByClassModel:
     Implementation of  the Group By Class Machine Learning Algorithms
     Features include model training,text classification,incremental learning, key word extraction
     '''
-    def __init__(self,name="",categories:List[str]=None,increment_learning=True,verbose=True):
+    def __init__(self,name="",categories:List[str]=None,increment_learning=True,verbose=True,number_of_features=0):
         '''
         Instantiate GBC Model:
 
         *By default incremental learning is set to True.
         '''
         self.verbose=verbose
+        self.number_of_features=number_of_features
         self.model_class_vectors:Dict={}
         self.model_unique_class_averages:Dict={}
         self.model_combined_classterm_weights:Dict={}
@@ -106,7 +107,7 @@ class GroupByClassModel:
         '''
         classify
         '''
-        cs = ClassifierService(self.model_class_vectors,self.model_categories,self.model_combined_classterm_weights,self.verbose)
+        cs = ClassifierService(self.model_class_vectors,self.model_categories,self.model_combined_classterm_weights,self.verbose,self.number_of_features)
         result={}
         
         if isinstance(data, list):

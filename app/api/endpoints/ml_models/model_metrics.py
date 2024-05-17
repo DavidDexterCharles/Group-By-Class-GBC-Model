@@ -13,6 +13,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.datasets import fetch_20newsgroups
 
 from sklearn.svm import SVC
 
@@ -339,7 +340,7 @@ class ModelMetrics:
         formatted_test_data = format_data_string(X_test, y_test)
         # Now, 'formatted_train_data' and 'formatted_test_data' contain the training and testing datasets in the required format
         # You can use these formatted datasets to train and evaluate your model
-        model=GroupByClassModel(verbose=False)
+        model=GroupByClassModel(verbose=False,number_of_features=int(0))
         model.train(formatted_train_data,True)
         model.classify(formatted_test_data)
         # return model.get_categories()
@@ -370,6 +371,55 @@ class ModelMetrics:
 
         return gbc_model_1
     
+    def api_gbc2(self):
+        '''
+        returns gbc metrics
+        '''
+        # Fetch the 20 newsgroups dataset
+        newsgroups_data = fetch_20newsgroups(subset='all', remove=('headers', 'footers', 'quotes'))
+        
+        X = newsgroups_data.data
+        y = newsgroups_data.target
+        
+        # Convert to your desired format
+        data = [{"content": X[i], "categories": [newsgroups_data.target_names[y[i]]]} for i in range(len(X))]
+        
+        # Split the data into training and testing sets
+        X_train, X_test, y_train, y_test = train_test_split(data, y, test_size=0.2, random_state=42)
+        
+        # Train your model
+        model = GroupByClassModel(verbose=False, number_of_features=int(0))
+        model.train(X_train, True)
+        
+        # Classify test data
+        model.classify(X_test)
+        
+        # Get model predictions
+        gbc_model_1 = model.get_model()
+        y_pred = gbc_model_1["y_pred"]
+        
+        # Calculate metrics
+        f1 = f1_score(y_test, y_pred, average='weighted')
+        precision, recall, _, _ = precision_recall_fscore_support(y_test, y_pred, average='weighted', zero_division=1)
+        subset_accuracy = accuracy_score(y_test, y_pred)
+        hamming_loss_value = hamming_loss(y_test, y_pred)
+        
+        # Print metrics
+        message = f"GBC F1 Score: {f1}, Precision: {precision}, Recall: {recall}"
+        print(message)
+        message = f"GBC subset_accuracy: {subset_accuracy}"
+        print(message)
+        message = f"GBC hamming_loss_value: {hamming_loss_value}"
+        print(message)
+        
+        # Print confusion matrix and classification report
+        print(confusion_matrix(y_test, y_pred, labels=gbc_model_1["categories"]))
+        print(classification_report(y_test, y_pred, labels=gbc_model_1["categories"], zero_division=1))
+        
+        # Print model categories
+        print(model.get_categories())
+        
+        return gbc_model_1
 
     def nb_vs_svm(self):
         # Sample data
