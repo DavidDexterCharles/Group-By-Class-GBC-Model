@@ -5,6 +5,7 @@
 #pylint: disable=C0303:trailing-whitespace
 #pylint: disable=C0301:line-too-long
 from heapq import nlargest
+import random
 from typing import List
 from .document_service import DocumentService
 
@@ -62,6 +63,9 @@ class ClassifierService:
         related_terms={}
         for category in self.model_categories:
             mcv=self.model_class_vectors[category]
+            # mcv=self.balanced_sample(mcv,500)
+            # mcv=self.get_top_n_pairs(mcv,500)
+            mcv=self.get_top_n_pairs(mcv,int(len(query_vector)))
             matching_terms=set(mcv).intersection(set(query_vector))
             if matching_terms:
                 related_vector = {key: mcv[key] for key in matching_terms}
@@ -73,7 +77,8 @@ class ClassifierService:
                         related_vector[key] = 0  # or any other appropriate action
                     # related_vector[key]=mcv[key]/self.combined_classterm_weights[key] #Penalize the Related Class Vectors using combined_classterm_weights
                 
-                # related_vector = self.get_top_n_pairs(related_vector,80)
+                # related_vector = self.balanced_sample(related_vector,50)
+                # related_vector = self.get_top_n_pairs(related_vector,30)
                 dot_product = sum(query_vector.get(key, 0) * related_vector.get(key, 0) for key in set(query_vector) & set(related_vector))
                 related_terms[category]=related_vector
                 related_vectors[category]=round(dot_product,3)
@@ -99,3 +104,31 @@ class ClassifierService:
         dict: A new dictionary containing the top N key-value pairs.
         """
         return dict(nlargest(n, related_vector.items(), key=lambda item: item[1]))
+    
+    def balanced_sample(self,dictionary, size):
+        # Step 1: Sort the dictionary by values
+        sorted_items = sorted(dictionary.items(), key=lambda item: item[1])
+        
+        # Step 2: Split the sorted list into low, middle, and top categories
+        total_items = len(sorted_items)
+        split_point_1 = total_items // 3
+        split_point_2 = (2 * total_items) // 3
+        
+        low_category = sorted_items[:split_point_1]
+        middle_category = sorted_items[split_point_1:split_point_2]
+        top_category = sorted_items[split_point_2:]
+        
+        # Step 3: Determine the proportions for each category
+        low_size = size // 3
+        middle_size = size // 3
+        top_size = size - low_size - middle_size
+        
+        # Step 4: Randomly sample the required number of elements from each category
+        sampled_low = random.sample(low_category, min(low_size, len(low_category)))
+        sampled_middle = random.sample(middle_category, min(middle_size, len(middle_category)))
+        sampled_top = random.sample(top_category, min(top_size, len(top_category)))
+        
+        # Step 5: Combine the sampled elements
+        sampled_dict = dict(sampled_low + sampled_middle + sampled_top)
+        
+        return sampled_dict

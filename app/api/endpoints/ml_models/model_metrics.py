@@ -31,7 +31,7 @@ def format_data(documents, labels):
     for i in range(len(documents)):
         # Concatenate each feature with its index/position
         # feature_strings = [f"{idx}:{val}" for idx, val in enumerate(documents[i])]
-        feature_strings = [f"{idx}:{round(val,2)}" for idx, val in enumerate(documents[i])]
+        feature_strings = [f"{idx}:{round(val,1)}" for idx, val in enumerate(documents[i])]
         instance = {
             # "content": " ".join(map(str, documents[i])),  # Convert feature array to space seperated string
             "content": " ".join(feature_strings),  # Convert feature array to space seperated string
@@ -45,15 +45,15 @@ def format_data(documents, labels):
 
 def format_data_string(documents, labels):
     formatted_data = []
-    # nltk.download('stopwords')
-    # stop_words = set(stopwords.words('english'))
+    nltk.download('stopwords')
+    stop_words = set(stopwords.words('english'))
     for i in range(len(documents)):
         # Concatenate each feature with its index/position
         # feature_strings = [f"{idx}:{val}" for idx, val in enumerate(documents[i])]
         feature_strings = documents[i].lower()#[f"{idx}:{round(val,2)}" for idx, val in enumerate(documents[i])]
-        # words = feature_strings.split()
-        # filtered_words = [word for word in words if word.lower() not in stop_words]# # Remove stop words
-        # feature_strings = ' '.join(filtered_words)# Join the filtered words back into a string
+        words = feature_strings.split()
+        filtered_words = [word for word in words if word.lower() not in stop_words]# # Remove stop words
+        feature_strings = ' '.join(filtered_words)# Join the filtered words back into a string
         instance = {
             # "content": " ".join(map(str, documents[i])),  # Convert feature array to space seperated string
             "content": feature_strings,  # Convert feature array to space seperated string
@@ -164,7 +164,7 @@ class ModelMetrics:
         formatted_test_data = format_data(X_test, y_test)
         # Now, 'formatted_train_data' and 'formatted_test_data' contain the training and testing datasets in the required format
         # You can use these formatted datasets to train and evaluate your model
-        model=GroupByClassModel()
+        model=GroupByClassModel(verbose=False)
         model.train(formatted_train_data,True)
         model.classify(formatted_test_data)
         # return model.get_categories()
@@ -369,3 +369,40 @@ class ModelMetrics:
         print(model.get_categories())
 
         return gbc_model_1
+    
+
+    def nb_vs_svm(self):
+        # Sample data
+        data = [
+            {"content": "This is the first document.", "categories": ["category1"]},
+            {"content": "This document is the second document.", "categories": ["category1"]},
+            {"content": "And this is the third one.", "categories": ["category2"]},
+            {"content": "Is this the first document?", "categories": ["category2"]}
+        ]
+
+        # Extract features and labels
+        X = [doc["content"] for doc in data]
+        y = [doc["categories"][0] for doc in data]
+
+        # Split data into train and test sets
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+        # Vectorize the text data using CountVectorizer
+        vectorizer = CountVectorizer(max_features=10)
+        X_train_counts = vectorizer.fit_transform(X_train)
+        X_test_counts = vectorizer.transform(X_test)
+
+        # Train Naive Bayes classifier
+        nb_clf = MultinomialNB()
+        nb_clf.fit(X_train_counts, y_train)
+        y_pred_nb = nb_clf.predict(X_test_counts)
+        f1_nb = f1_score(y_test, y_pred_nb, average='weighted')
+
+        # Train SVM classifier
+        svm_clf = SVC()
+        svm_clf.fit(X_train_counts, y_train)
+        y_pred_svm = svm_clf.predict(X_test_counts)
+        f1_svm = f1_score(y_test, y_pred_svm, average='weighted')
+
+        print("Multinomial Naive Bayes F1 Score:", f1_nb)
+        print("SVM F1 Score:", f1_svm)

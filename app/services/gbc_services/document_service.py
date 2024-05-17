@@ -75,9 +75,9 @@ class DocumentService:
         for word in words: # Iterate over the words and add them to the set
             unique_words.add(word)
         
-        tv = Counter(unique_words)
+        # tv = Counter(unique_words)
         # tv=Counter(self._pre_process(doc).split(" "))
-        # tv=Counter(doc.lower().split(" "))
+        tv=Counter(doc.lower().split(" "))
         return tv
     def _pre_process(self,text):
         # text = text.lower()
