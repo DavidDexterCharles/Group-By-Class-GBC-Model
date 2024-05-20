@@ -91,12 +91,14 @@ class TrainerService:
             unique_class_average = self._get_unique_class_average(unique_weights)
             self.unique_class_averages[category]=unique_class_average
             for term in class_vector:
-                term_weight=round(class_vector[term] / unique_class_average,2)
+                # term_weight=round(class_vector[term] / unique_class_average,2)
+                term_weight=class_vector[term] / unique_class_average
                 class_vector[term] = term_weight
                 # if term in self.combined_classterm_weights:
                 #     self.combined_classterm_weights[term]+=term_weight
                 # else:
                 #     self.combined_classterm_weights[term]=term_weight
+            
     
     def _get_unique_class_average(self,unique_weights):
         '''
@@ -156,7 +158,8 @@ class TrainerService:
             class_vector=self.class_vectors[category]
             unique_class_average=self.unique_class_averages[category]
             for term in class_vector:
-                class_vector[term] = round(class_vector[term] * unique_class_average,1)
+                # class_vector[term] = round(class_vector[term] * unique_class_average,1)
+                class_vector[term] = class_vector[term] * unique_class_average
     
     def merge_classvector_with_termvector(self,valid_categories:List,document_term_vector:Counter):
         '''

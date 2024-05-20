@@ -51,7 +51,7 @@ def format_data_string(documents, labels):
     for i in range(len(documents)):
         # Concatenate each feature with its index/position
         # feature_strings = [f"{idx}:{val}" for idx, val in enumerate(documents[i])]
-        feature_strings = documents[i].lower()#[f"{idx}:{round(val,2)}" for idx, val in enumerate(documents[i])]
+        feature_strings:str = documents[i].lower()#[f"{idx}:{round(val,2)}" for idx, val in enumerate(documents[i])]
         # words = feature_strings.split()
         # filtered_words = [word for word in words if word.lower() not in stop_words]# # Remove stop words
         # feature_strings = ' '.join(filtered_words)# Join the filtered words back into a string
@@ -303,7 +303,7 @@ class ModelMetrics:
 
         # Split data into train and test sets
         # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=5)
 
         # Vectorize the text data using CountVectorizer
         count_vectorizer = CountVectorizer(max_features=1000)  # You can adjust max_features as needed
@@ -334,7 +334,7 @@ class ModelMetrics:
         y = [doc["categories"][0] for doc in data]
         
         # Split the data into training and testing sets
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=5)
         # Format training and testing data
         formatted_train_data = format_data_string(X_train, y_train)
         formatted_test_data = format_data_string(X_test, y_test)
