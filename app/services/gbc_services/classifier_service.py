@@ -66,16 +66,17 @@ class ClassifierService:
             mcv=self.model_class_vectors[category]
             # mcv=self.balanced_sample(mcv,500)
             # mcv=self.get_top_n_pairs(mcv,1000)
-            if len(query_vector)<len(mcv):
-                self.number_of_features=int(len(query_vector))+int(len(mcv)/len(query_vector))
-            mcv=self.get_top_n_pairs(mcv,self.number_of_features)
+            # if len(query_vector)<len(mcv):
+            #     self.number_of_features=int(len(query_vector))+int(len(mcv)/len(query_vector))
+            # mcv=self.get_top_n_pairs(mcv,self.number_of_features)
             # mcv=self.get_top_n_pairs(mcv,int(len(query_vector))+self.number_of_features)
             matching_terms=set(mcv).intersection(set(query_vector))
             if matching_terms:
                 related_vector = {key: mcv[key] for key in matching_terms}
                 for key in matching_terms:
                     if self.combined_classterm_weights[key] != 0:
-                        related_vector[key] = round(mcv[key] / self.combined_classterm_weights[key],3)
+                        # related_vector[key] = round(mcv[key] / self.combined_classterm_weights[key],3)
+                        related_vector[key] = mcv[key] / self.combined_classterm_weights[key]
                     else:
                         # Handle division by zero gracefully, for example, by setting a default value
                         related_vector[key] = 0  # or any other appropriate action
@@ -85,7 +86,8 @@ class ClassifierService:
                 # related_vector = self.get_top_n_pairs(related_vector,30)
                 dot_product = sum(query_vector.get(key, 0) * related_vector.get(key, 0) for key in set(query_vector) & set(related_vector))
                 related_terms[category]=related_vector
-                related_vectors[category]=round(dot_product,3)
+                # related_vectors[category]=round(dot_product,3)
+                related_vectors[category]=dot_product
 
         self.related_terms=related_terms
         if self.verbose:

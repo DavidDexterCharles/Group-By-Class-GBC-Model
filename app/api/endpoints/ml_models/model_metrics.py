@@ -385,8 +385,10 @@ class ModelMetrics:
         data = [{"content": X[i], "categories": [newsgroups_data.target_names[y[i]]]} for i in range(len(X))]
         
         # Split the data into training and testing sets
-        X_train, X_test, y_train, y_test = train_test_split(data, y, test_size=0.2, random_state=42)
-        
+        X_train, X_test, y_train_indices, y_test_indices = train_test_split(data, y, test_size=0.2, random_state=42)
+        # Convert y_train_indices and y_test_indices to category strings
+        y_train = [newsgroups_data.target_names[i] for i in y_train_indices]
+        y_test = [newsgroups_data.target_names[i] for i in y_test_indices]
         # Train your model
         model = GroupByClassModel(verbose=False, number_of_features=int(0))
         model.train(X_train, True)
@@ -420,7 +422,84 @@ class ModelMetrics:
         print(model.get_categories())
         
         return gbc_model_1
+    
+    def api_gbc3(self):
+        '''
+        returns gbc metrics
+        '''
+        categories =[
+            'alt.atheism',
+            'sci.space',
+            'comp.graphics',
+            'talk.religion.misc',
+            
+            'comp.os.ms-windows.misc',
+            'comp.sys.ibm.pc.hardware',
+            'comp.sys.mac.hardware',
+            'comp.windows.x',
+            'misc.forsale',
+            'rec.autos',
+            'rec.motorcycles',
+            'rec.sport.baseball',
+            
+            
+            'rec.sport.hockey',
+            'sci.crypt',
+            'sci.electronics',
+            'sci.med',
+            'soc.religion.christian',
+            'talk.politics.guns',
+            'talk.politics.mideast',
+            'talk.politics.misc'
+            
+            
+        ]
 
+        train_data = fetch_20newsgroups(subset='train', categories=categories)# Load the training subset
+        test_data = fetch_20newsgroups(subset='test', categories=categories)# Load the testing subset
+        data_train = [{"content": train_data.data[i], "categories": [train_data.target_names[train_data.target[i]]]} for i in range(len(train_data.data))]
+        data_test = [{"content": test_data.data[i], "categories": [test_data.target_names[test_data.target[i]]]} for i in range(len(test_data.data))]
+        X_train = data_train
+        X_test = data_test
+        y_train_indices = train_data.target
+        y_test_indices = test_data.target
+        y_train = [train_data.target_names[i] for i in y_train_indices]
+        y_test = [test_data.target_names[i] for i in y_test_indices]
+
+        # Train your model
+        model = GroupByClassModel(verbose=False, number_of_features=int(0))
+        model.train(X_train, True)
+        
+        # Classify test data
+        model.classify(X_test)
+        
+        # Get model predictions
+        gbc_model_1 = model.get_model()
+        y_pred = gbc_model_1["y_pred"]
+        
+        # Calculate metrics
+        f1 = f1_score(y_test, y_pred, average='weighted')
+        precision, recall, _, _ = precision_recall_fscore_support(y_test, y_pred, average='weighted', zero_division=1)
+        subset_accuracy = accuracy_score(y_test, y_pred)
+        hamming_loss_value = hamming_loss(y_test, y_pred)
+        
+        # Print metrics
+        message = f"GBC F1 Score: {f1}, Precision: {precision}, Recall: {recall}"
+        print(message)
+        message = f"GBC subset_accuracy: {subset_accuracy}"
+        print(message)
+        message = f"GBC hamming_loss_value: {hamming_loss_value}"
+        print(message)
+        
+        # Print confusion matrix and classification report
+        print(confusion_matrix(y_test, y_pred, labels=gbc_model_1["categories"]))
+        print(classification_report(y_test, y_pred, labels=gbc_model_1["categories"], zero_division=1))
+        
+        # Print model categories
+        print(model.get_categories())
+        
+        return gbc_model_1
+    
     def nb_vs_svm(self):
         # Sample data
         data = [
