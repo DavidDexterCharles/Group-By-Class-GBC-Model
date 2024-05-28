@@ -37,6 +37,7 @@ def api_articles(page_number: int = Query(1, ge=1), page_size: int = Query(100, 
     result = article_collection.find().sort("insert_date", -1).skip(skip).limit(page_size)
     return list(result)
 
+# https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=train_test_split%2C+test_size+and+random_state&btnG=
 @router.get("/api/evaluate", response_model=List[Article2])
 def api_evaluate(mongo_client: MongoClient = Depends(get_mongo_client)):
     '''
@@ -52,10 +53,12 @@ def api_evaluate(mongo_client: MongoClient = Depends(get_mongo_client)):
     # result = article_collection.find().sort("insert_date", -1).skip(skip).limit(page_size)
     result = article_collection.find().sort("_id", -1).skip(skip).limit(page_size)
     result_list=list(result)
-    mm= ModelMetrics()
+    mm= ModelMetrics(.2,5)
+    # mm= ModelMetrics(.2,70)
     mm.api_svm(result_list)
     mm.api_svm_tfidf(result_list)
     mm.api_naive_bayes(result_list)
+    mm.api_naive_bayes_tfidf(result_list)
     mm.api_gbc(result_list)
     # mm.api_gbc2()
     # mm.api_gbc3()

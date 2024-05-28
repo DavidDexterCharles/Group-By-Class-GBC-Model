@@ -82,9 +82,11 @@ def format_data_multi(X, y):
 
 class ModelMetrics:
 
-    def __init__(self):
+    def __init__(self,test_size=.1,random_state=5):
         # https://archive.ics.uci.edu/dataset/17/breast+cancer+wisconsin+diagnostic
         self.data_breast_cancer=load_breast_cancer()
+        self.random_state=random_state
+        self.test_size=test_size
     
     def randomforest(self):
         # Generate random multi-label dataset
@@ -244,7 +246,7 @@ class ModelMetrics:
         y = [doc["categories"][0] for doc in data]
 
         # Split data into train and test sets
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=self.test_size, random_state=self.random_state)
 
         # Vectorize the text data using CountVectorizer (instead of TF-IDF)
         count_vectorizer = CountVectorizer(max_features=1000)  # You can adjust max_features as needed
@@ -273,7 +275,7 @@ class ModelMetrics:
         y = [doc["categories"][0] for doc in data]
 
         # Split data into train and test sets
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=self.test_size, random_state=self.random_state)
 
         # Vectorize the text data using TF-IDF
         tfidf_vectorizer = TfidfVectorizer(max_features=1000)  # You can adjust max_features as needed
@@ -303,7 +305,7 @@ class ModelMetrics:
 
         # Split data into train and test sets
         # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=5)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=self.test_size, random_state=self.random_state)
 
         # Vectorize the text data using CountVectorizer
         count_vectorizer = CountVectorizer(max_features=1000)  # You can adjust max_features as needed
@@ -325,6 +327,35 @@ class ModelMetrics:
 
         print("naive_bayes: F1 Score:", f1)
         print("naive_bayes: Confusion Matrix:\n", conf_matrix)
+    
+    def api_naive_bayes_tfidf(self, data):
+        # Extract features (content) and labels (categories)
+        X = [doc["content"] for doc in data]
+        y = [doc["categories"][0] for doc in data]
+
+        # Split data into train and test sets
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=self.test_size, random_state=self.random_state)
+
+        # Vectorize the text data using TfidfVectorizer
+        tfidf_vectorizer = CountVectorizer(max_features=1000)#TfidfVectorizer(max_features=100000)  # You can adjust max_features as needed
+        X_train_tfidf = tfidf_vectorizer.fit_transform(X_train)
+        X_test_tfidf = tfidf_vectorizer.transform(X_test)
+
+        # Train Naive Bayes classifier
+        nb_clf = MultinomialNB()
+        nb_clf.fit(X_train_tfidf, y_train)
+
+        # Predict labels for the test set
+        y_pred = nb_clf.predict(X_test_tfidf)
+
+        # Calculate F1 score
+        f1 = f1_score(y_test, y_pred, average='weighted')
+
+        # Generate confusion matrix
+        conf_matrix = confusion_matrix(y_test, y_pred)
+
+        print("naive_bayes_tfidf: F1 Score:", f1)
+        print("naive_bayes_tfidf: Confusion Matrix:\n", conf_matrix)
 
     def api_gbc(self,data):
         '''
@@ -334,7 +365,7 @@ class ModelMetrics:
         y = [doc["categories"][0] for doc in data]
         
         # Split the data into training and testing sets
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=5)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=self.test_size, random_state=self.random_state)
         # Format training and testing data
         formatted_train_data = format_data_string(X_train, y_train)
         formatted_test_data = format_data_string(X_test, y_test)
@@ -385,7 +416,7 @@ class ModelMetrics:
         data = [{"content": X[i], "categories": [newsgroups_data.target_names[y[i]]]} for i in range(len(X))]
         
         # Split the data into training and testing sets
-        X_train, X_test, y_train_indices, y_test_indices = train_test_split(data, y, test_size=0.2, random_state=42)
+        X_train, X_test, y_train_indices, y_test_indices = train_test_split(data, y, test_size=self.test_size, random_state=self.random_state)
         # Convert y_train_indices and y_test_indices to category strings
         y_train = [newsgroups_data.target_names[i] for i in y_train_indices]
         y_test = [newsgroups_data.target_names[i] for i in y_test_indices]
