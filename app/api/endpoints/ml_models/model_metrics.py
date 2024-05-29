@@ -243,7 +243,7 @@ class ModelMetrics:
     def api_svm(self,data):
         # Extract features (content) and labels (categories)
         X = [doc["content"] for doc in data]
-        y = [doc["categories"][0] for doc in data]
+        y = [doc["categories"][0].lower().strip(" ") for doc in data]
 
         # Split data into train and test sets
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=self.test_size, random_state=self.random_state)
@@ -268,11 +268,12 @@ class ModelMetrics:
 
         print("svm: F1 Score:", f1)
         print("svm: Confusion Matrix:\n", conf_matrix)
+        print(classification_report(y_test, y_pred, labels=svm_clf.classes_,zero_division=1))
         
     def api_svm_tfidf(self,data):
         # Extract features (content) and labels (categories)
         X = [doc["content"] for doc in data]
-        y = [doc["categories"][0] for doc in data]
+        y = [doc["categories"][0].lower().strip(" ") for doc in data]
 
         # Split data into train and test sets
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=self.test_size, random_state=self.random_state)
@@ -297,11 +298,12 @@ class ModelMetrics:
 
         print("svm_tfidf: F1 Score:", f1)
         print("svm_tfidf: Confusion Matrix:\n", conf_matrix)
+        print(classification_report(y_test, y_pred, labels=svm_clf.classes_,zero_division=1))
     
     def api_naive_bayes(self, data):
         # Extract features (content) and labels (categories)
         X = [doc["content"] for doc in data]
-        y = [doc["categories"][0] for doc in data]
+        y = [doc["categories"][0].lower().strip(" ") for doc in data]
 
         # Split data into train and test sets
         # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -327,11 +329,12 @@ class ModelMetrics:
 
         print("naive_bayes: F1 Score:", f1)
         print("naive_bayes: Confusion Matrix:\n", conf_matrix)
-    
+        print(classification_report(y_test, y_pred, labels=nb_clf.classes_,zero_division=1))
+
     def api_naive_bayes_tfidf(self, data):
         # Extract features (content) and labels (categories)
         X = [doc["content"] for doc in data]
-        y = [doc["categories"][0] for doc in data]
+        y = [doc["categories"][0].lower().strip(" ") for doc in data]
 
         # Split data into train and test sets
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=self.test_size, random_state=self.random_state)
@@ -356,6 +359,7 @@ class ModelMetrics:
 
         print("naive_bayes_tfidf: F1 Score:", f1)
         print("naive_bayes_tfidf: Confusion Matrix:\n", conf_matrix)
+        print(classification_report(y_test, y_pred, labels=nb_clf.classes_,zero_division=1))
 
     def api_gbc(self,data):
         '''
