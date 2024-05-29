@@ -249,7 +249,8 @@ class ModelMetrics:
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=self.test_size, random_state=self.random_state)
 
         # Vectorize the text data using CountVectorizer (instead of TF-IDF)
-        count_vectorizer = CountVectorizer(max_features=1000)  # You can adjust max_features as needed
+        # count_vectorizer = CountVectorizer(max_features=1000)  # You can adjust max_features as needed
+        count_vectorizer = CountVectorizer()  # You can adjust max_features as needed
         X_train_counts = count_vectorizer.fit_transform(X_train)
         X_test_counts = count_vectorizer.transform(X_test)
 
@@ -279,7 +280,8 @@ class ModelMetrics:
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=self.test_size, random_state=self.random_state)
 
         # Vectorize the text data using TF-IDF
-        tfidf_vectorizer = TfidfVectorizer(max_features=1000)  # You can adjust max_features as needed
+        # tfidf_vectorizer = TfidfVectorizer(max_features=1000)  # You can adjust max_features as needed
+        tfidf_vectorizer = TfidfVectorizer()  # You can adjust max_features as needed
         X_train_tfidf = tfidf_vectorizer.fit_transform(X_train)
         X_test_tfidf = tfidf_vectorizer.transform(X_test)
 
@@ -310,7 +312,8 @@ class ModelMetrics:
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=self.test_size, random_state=self.random_state)
 
         # Vectorize the text data using CountVectorizer
-        count_vectorizer = CountVectorizer(max_features=1000)  # You can adjust max_features as needed
+        # count_vectorizer = CountVectorizer(max_features=100000)  # You can adjust max_features as needed
+        count_vectorizer = CountVectorizer()  # You can adjust max_features as needed
         X_train_counts = count_vectorizer.fit_transform(X_train)
         X_test_counts = count_vectorizer.transform(X_test)
 
@@ -340,7 +343,8 @@ class ModelMetrics:
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=self.test_size, random_state=self.random_state)
 
         # Vectorize the text data using TfidfVectorizer
-        tfidf_vectorizer = CountVectorizer(max_features=1000)#TfidfVectorizer(max_features=100000)  # You can adjust max_features as needed
+        # tfidf_vectorizer = CountVectorizer(max_features=1000)#TfidfVectorizer(max_features=100000)  # You can adjust max_features as needed
+        tfidf_vectorizer = TfidfVectorizer()  # You can adjust max_features as needed
         X_train_tfidf = tfidf_vectorizer.fit_transform(X_train)
         X_test_tfidf = tfidf_vectorizer.transform(X_test)
 
